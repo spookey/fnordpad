@@ -1,0 +1,35 @@
+# Kein Kommentar #
+#!/bin/bash
+
+## Variablen
+# Zielordner der Bilder
+ordner=$HOME/bilder;
+# Adressen der soups
+suppe=("http://fnordpad.soup.io/rss" "http://sixtus.soup.io/rss" "http://fotochaoten.soup.io/rss" "http://gnd.soup.io/rss")
+# Name und Ort des Formatierscripts
+format=$HOME/format
+# Name und Ort des Ladescripts
+load=$HOME/load.sh
+
+
+# Bilderordner anlegen, falls er nicht existiert
+if [ ! -d "$ordner" ] ; then
+    mkdir -p $ordner
+fi
+
+# Ladescript anlegen
+if [ ! -f "$load" ] ; then
+    touch  $load
+fi
+
+# hässlicher Fix, damit Curl richtig speichtert
+echo "cd $ordner" >> $load
+
+# alle Feeds parsen und speichern 
+for ((i=0; i<=`echo ${#suppe[@]}`-1; i++))
+do
+    sh $format `echo ${suppe[$i]}` | awk '{ sub(/http:/, "curl -sfO http:"); print }' >> $load 
+done
+
+# Downloads anschmeißen
+chmod +x $load && sh $load && rm $load

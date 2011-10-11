@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    echo "No feed declared - Usage: $0 rss-url"
+    exit 1
+fi
+
+curl -s $1 | grep -o '<enclosure [^>]*>' | grep -o 'http://[^\"]*' | awk '{ sub(/_400/, ""); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+
