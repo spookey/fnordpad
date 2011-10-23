@@ -1,1 +1,7 @@
-This is the Software of the PicturePad at the CCCMZWI
+This is which runs the Fnordpad at the CCC in Wiesbaden
+
+We use the Fnordpad as a Digiatal Photo Frame wich gets images from our soup.io accounts.
+
+To display the images we use the framebuffer image viewer on an actual Debian Squeeze.
+
+Feel free to use and change the software on your own.
