@@ -1,4 +1,4 @@
-#ugly code is ugly#
+#WIDERLICH!! SCHANDE!!#
 #!/bin/bash
 
 ## create temporary files

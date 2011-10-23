@@ -1,9 +1,10 @@
 # Kein Kommentar #
+
 #!/bin/bash
 
 ## Variablen
 # Zielordner der Bilder
-ordner=$HOME/bilder;
+ordner=$HOME/bilder
 # Adressen der soups
 suppe=("http://fnordpad.soup.io/rss" "http://sixtus.soup.io/rss" "http://fotochaoten.soup.io/rss" "http://gnd.soup.io/rss")
 # Name und Ort des Formatierscripts
