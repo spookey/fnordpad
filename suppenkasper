@@ -34,3 +34,5 @@ done
 
 # Downloads anschmeißen
 chmod +x $load && sh $load && rm $load
+
+exit 0
