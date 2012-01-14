@@ -35,7 +35,7 @@ done
 # Downloads anschmeißen
 chmod +x $load && bash $load
 
-if[ ! -f "$load"] ; then
+if[ -f "$load"] ; then
   rm $load
 fi
 
