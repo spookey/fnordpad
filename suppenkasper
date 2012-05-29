@@ -18,7 +18,7 @@ fi
 # alle Feeds parsen und speichern 
 for ((i=0; i<=`echo ${#suppe[@]}`-1; i++))
 do
-    wget -P $ordner -c `$parser ${suppe[$i]}`
+    wget -qP $ordner -c `$parser ${suppe[$i]}`
 done
 
 exit 0
