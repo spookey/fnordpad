@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    echo 1>&2 "Usage: $0 [soup url]"
+    exit 127
+fi
+
+wget -qO - $1 | grep -o 'http://[0-9].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | awk '{ sub(/_16/, ""); print }' | awk '{ sub(/_500/, ""); print }' | awk '{ sub(/_600/, ""); print }' | awk '{ sub(/_640/, ""); print }' | awk '{ sub(/_651/, ""); print }' | awk '{ sub(/_700/, ""); print }' | awk '{ sub(/_720/, ""); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+
+exit 0
