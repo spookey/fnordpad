@@ -5,6 +5,6 @@ if [ -z $1 ]; then
     exit 127
 fi
 
-wget -qO - $1 | grep -o '<enclosure [^>]*>' | grep -o 'http://[^\"]*' | awk '{ sub(/_400/, ""); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+wget -qO - $1 | grep -o '<enclosure [^>]*>' | grep -o 'http://[^\"]*' | awk '{ sub(/_400/, ""); print }' | awk '{ sub(/_390/, ""); print }'| awk '{ sub(/.jpeg/, ".jpg"); print }'
 
 exit 0
