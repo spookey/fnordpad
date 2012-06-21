@@ -7,6 +7,4 @@ fi
 
 wget -qO - $1 | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | awk '{ sub(/_[0-9]{3}\./, "."); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
 
-
-
 exit 0
