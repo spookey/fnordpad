@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    echo 1>&2 "Usage: $0 [soup url]"
+    exit 127
+else    
+    url=$1
+fi
+if [ -z $2 ]; then
+	pages=5
+else
+	pages=$2
+fi
+
+while
+		if [ $pages -gt 0 ]; then
+		
+		url=$1 wget -qO - $url | grep -w 'SOUP.Endless.next_url' | grep -o '/since/[^\?]*'"
+		else
+			exit 0
+		fi
+do
+
+
+
+	echo $url $pages
+
+
+	#wget -qO - $url | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | awk '{ sub(/_[0-9]{3}\./, "."); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+	
+	pages=$[$pages-1]
+done
+
+
+exit 0

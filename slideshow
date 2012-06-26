@@ -2,4 +2,4 @@
 
 #!/bin/bash
 
-fbi -u -T vt01 -t 10 --autodown --noverbose /home/moria/bilder/*g
+fbi -u -T vt01 -t 10 --autodown --noverbose /home/moria/bilder/*{png,jpg}

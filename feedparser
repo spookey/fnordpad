@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    echo 1>&2 "Usage: $0 [feed url]"
+    exit 127
+fi
+
+wget -qO - $1 | grep -o '<enclosure [^>]*>' | grep -o 'http://[^\"]*'  | awk '{ sub(/_[0-9]{3}\./, "."); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+
+exit 0
