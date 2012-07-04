@@ -1,7 +1,10 @@
-This is which runs the Fnordpad at the CCC in Wiesbaden
+Dies ist der soup.io crawler der auf dem Fnordpad im CCC in Wiesbaden läuft.
 
-We use the Fnordpad as a Digiatal Photo Frame wich gets images from our soup.io accounts.
-
-To display the images we use the framebuffer image viewer on an actual Debian Squeeze.
-
-Feel free to use and change the software on your own.
+/*
+* ----
+* "THE BEER-WARE LICENSE" (Revision 42):
+* <frieder.griesshammer@der-beweis.de> wrote this file. As long as you retain this notice you
+* can do whatever you want with this stuff. If we meet some day, and you think
+* this stuff is worth it, you can buy me a beer in return. Frieder Griesshammer
+* ----
+*/

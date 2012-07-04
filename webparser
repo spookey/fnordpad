@@ -5,6 +5,25 @@ if [ -z $1 ]; then
     exit 127
 fi
 
-wget -qO - $1 | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | awk '{ sub(/_[0-9]{3}\./, "."); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+if [ -z $2 ]; then
+		pages=5
+else
+		pages=$2
+fi
+
+url=$1
+
+for ((i=0; i<pages; i++))
+do
+
+wget -qO - $url | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | awk '{ sub(/_[0-9]{3}\./, "."); print }' | awk '{ sub(/.jpeg/, ".jpg"); print }'
+
+#Get the next page
+since=`wget -qO - $url | grep -w 'SOUP.Endless.next_url' | grep -o "since[^\']*" | awk '{ sub(/\?mode\=own/, ""); print }'`
+
+#Merge urls together
+url=${1}${since}
+
+done 
 
 exit 0

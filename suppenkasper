@@ -5,7 +5,7 @@
 ## Variablen
 # Zielordner der Bilder
 ordner=$HOME/bilder
-# Adressen der soups
+# Adressen der soups (# Trailing slash!)
 suppe=("http://fnordpad.soup.io/" "http://sixtus.soup.io/" "http://fotochaoten.soup.io/" "http://kochchaoten.soup.io/" "http://gnd.soup.io/")
 # Name und Ort des parsers
 feedparser=$HOME/feedparser
