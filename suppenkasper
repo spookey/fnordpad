@@ -5,27 +5,26 @@
 ## Variablen
 # Zielordner der Bilder
 ordner=$HOME/bilder
-# Adressen der soups (# Trailing slash!)
-suppe=("http://fnordpad.soup.io/" "http://sixtus.soup.io/" "http://fotochaoten.soup.io/" "http://kochchaoten.soup.io/" "http://gnd.soup.io/")
+# Namen der soups
+suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
 # Name und Ort des parsers
 feedparser=$HOME/feedparser
 webparser=$HOME/webparser
 
 # Bilderordner anlegen, falls er nicht existiert
 if [ ! -d "$ordner" ] ; then
-    mkdir -p $ordner
+  mkdir -p $ordner
 fi
 
-# alle Feeds parsen und speichern 
-for ((i=0; i<=`echo ${#suppe[@]}`-1; i++))
-do
-    wget -qP $ordner -c `$feedparser ${suppe[$i]}rss`
-done
 
-# alle Webseiten parsen und speichern 
-for ((i=0; i<=`echo ${#suppe[@]}`-1; i++))
-do
-    wget -qP $ordner -c `$webparser ${suppe[$i]}`
+for name in ${suppe[@]}; do
+
+	# die rss Feeds parsen
+	wget -qc -P $ordner `$feedparser $name`
+
+	# die Reposts von der Seite holen
+	wget -qc -P $ordner `$webparser $name`
+	
 done
 
 exit 0
