@@ -7,23 +7,41 @@
 ordner=$HOME/bilder
 # Namen der soups
 suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
-# Name und Ort des parsers
-feedparser=$HOME/feedparser
-webparser=$HOME/webparser
+
+# Funktionsabhaengige Konfiguration
+	soupweb_pages=5
+##
+
+soupfeed() {
+	# Adresse zusammenstückeln
+	url=http://${name}.soup.io/rss/
+	wget -qO - $url | grep -o '<enclosure [^>]*>' | grep -o 'http://[^\"]*'  | sed 's/_[0-9][0-9][0-9]\././' | sed 's/\.jpeg/.jpg/'
+}
+
+soupweb() {
+	for ((i=0; i<soupweb_pages; i++)); do
+		# Adresse zusammenstückeln
+		url=http://${name}.soup.io/${since}	
+		wget -O - $url | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | sed 's/_[0-9][0-9][0-9]\././' | sed 's/_[0-9][0-9]\././' | sed 's/\.jpeg/.jpg/'
+
+		# Umblättern
+		since=`wget -qO - $url | grep -w 'SOUP.Endless.next_url' | grep -o "since[^\']*" | awk '{ sub(/\?mode\=own/, ""); print }'`
+	done 
+
+}
 
 # Bilderordner anlegen, falls er nicht existiert
 if [ ! -d "$ordner" ] ; then
   mkdir -p $ordner
 fi
 
-
 for name in ${suppe[@]}; do
 
 	# die rss Feeds parsen
-	wget -qc -P $ordner `$feedparser $name`
+	#wget -c -P $ordner `soupfeed $name`
 
 	# die Reposts von der Seite holen
-	wget -qc -P $ordner `$webparser $name`
+	wget -c -P $ordner `soupweb $name`
 	
 done
 
