@@ -9,7 +9,7 @@ ordner=$HOME/bilder
 suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
 
 # Funktionsabhaengige Konfiguration
-	soupweb_pages=5
+	
 ##
 
 soupfeed() {
@@ -19,9 +19,17 @@ soupfeed() {
 }
 
 soupweb() {
-	for ((i=0; i<soupweb_pages; i++)); do
+	
+	if [ -n $1 ]; then
+		pages=$1
+	else
+		pages=5
+	fi
+	
+	for ((i=0; i<pages; i++)); do
 		# Adresse zusammenstückeln
-		url=http://${name}.soup.io/${since}	
+		url=http://${name}.soup.io/${since}
+
 		wget -qO - $url | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | sed 's/_[0-9][0-9][0-9]\././' | sed 's/_[0-9][0-9]\././' | sed 's/\.jpeg/.jpg/'
 
 		# Umblättern
@@ -31,7 +39,7 @@ soupweb() {
 }
 
 # Bilderordner anlegen, falls er nicht existiert
-if [ ! -d "$ordner" ] ; then
+if [ ! -d "$ordner" ]; then
   mkdir -p $ordner
 fi
 
