@@ -7,6 +7,8 @@
 ordner=$HOME/bilder
 # Namen der soups
 suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
+# Twitter wird geparst um Bilder von Instagram zu finden
+zwitscher=(cccmz lambda_ kventil spookey)
 
 # Funktionsabhaengige Konfiguration
 	
@@ -19,23 +21,35 @@ soupfeed() {
 }
 
 soupweb() {
-	
-	if [ -n $1 ]; then
-		pages=$1
-	else
+	# Wie viele Seiten soll ich gehen?
+	if [ -z $2 ]; then
 		pages=5
+	else
+		pages=$2
 	fi
-	
+
 	for ((i=0; i<pages; i++)); do
 		# Adresse zusammenstückeln
 		url=http://${name}.soup.io/${since}
-
 		wget -qO - $url | grep -o 'http://[0-9a-z].asset.soup.io/asset/[^0000][^\"]*' | grep -wv square* | sed 's/_[0-9][0-9][0-9]\././' | sed 's/_[0-9][0-9]\././' | sed 's/\.jpeg/.jpg/'
-
 		# Umblättern
-		since=`wget -qO - $url | grep -w 'SOUP.Endless.next_url' | grep -o "since[^\']*" | awk '{ sub(/\?mode\=own/, ""); print }'`
-	done 
+		since=$(wget -qO - $url | grep -w 'SOUP.Endless.next_url' | grep -o 'since[^?;]*' )
+	done
+}
 
+twinsta() {
+	url=https://api.twitter.com/1/statuses/user_timeline.rss?screen_name=$name
+	twstr=$(wget -qO - $url | grep -w 'guid*' | grep -o 'http[^\<]*')
+	for line in $twstr; do
+		insta=$(wget -qO - $line | grep -o 'http://instagr[^\"\ ]*' )
+
+		if [ -n "$insta" ]; then
+			wget -qO - $insta | grep -w 'img class="photo"' | grep -o 'http://[^\"]*'
+		else
+			echo "http://2.asset.soup.io/asset/2217/6754_e190.jpg"
+		fi
+		
+	done
 }
 
 # Bilderordner anlegen, falls er nicht existiert
@@ -43,14 +57,21 @@ if [ ! -d "$ordner" ]; then
   mkdir -p $ordner
 fi
 
+for name in ${zwitscher[@]}; do
+
+	# Bilder von Instagram via Twitter
+	wget -qc -P $ordner $(twinsta $name)
+
+done
+
 for name in ${suppe[@]}; do
 
 	# die rss Feeds parsen
-	wget -qc -P $ordner `soupfeed $name`
+	wget -qc -P $ordner $(soupfeed $name)
 
 	# die Reposts von der Seite holen
-	wget -qc -P $ordner `soupweb $name`
-	
+	wget -qc -P $ordner $(soupweb $name)
+
 done
 
 exit 0
