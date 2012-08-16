@@ -46,8 +46,10 @@ twinsta() {
 		if [ -n "$insta" ]; then
 			wget -qO - $insta | grep -w 'img class="photo"' | grep -o 'http://[^\"]*'
 		else
-			echo "http://2.asset.soup.io/asset/2217/6754_e190.jpg"
+			echo "https://raw.github.com/spookey/fnordpad/master/fnordpad.jpg"
 		fi
+		
+		# awesome code!!1!
 		
 	done
 }
