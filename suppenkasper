@@ -8,11 +8,7 @@ ordner=$HOME/bilder
 # Namen der soups
 suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
 # Twitter wird geparst um Bilder von Instagram zu finden
-zwitscher=(cccmz lambda_ kventil spookey)
-
-# Funktionsabhaengige Konfiguration
-	
-##
+zwitscher=(cccmz spookey lambda_ kventil lsanoj)
 
 soupfeed() {
 	# Adresse zusammenstückeln
@@ -48,8 +44,7 @@ twinsta() {
 		else
 			echo "https://raw.github.com/spookey/fnordpad/master/fnordpad.jpg"
 		fi
-		
-		# awesome code!!1!
+		# this is awesome code!!1!
 		
 	done
 }
