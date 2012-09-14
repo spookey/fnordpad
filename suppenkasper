@@ -6,9 +6,9 @@
 # Zielordner der Bilder
 ordner=$HOME/bilder
 # Namen der soups
-suppe=(fnordpad sixtus fotochaoten kochchaoten gnd)
+suppe=(fnordpad gnd cccmz sixtus fotochaoten kochchaoten)
 # Twitter wird geparst um Bilder von Instagram zu finden
-zwitscher=(cccmz spookey lambda_ kventil lsanoj)
+zwitscher=(cccmz cccmzwi spookey lambda_ kventil lsanoj)
 
 soupfeed() {
 	# Adresse zusammenstückeln
