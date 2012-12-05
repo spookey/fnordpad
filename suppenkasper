@@ -6,9 +6,7 @@
 # Zielordner der Bilder
 ordner=$HOME/bilder
 # Namen der soups
-suppe=(fnordpad gnd cccmz sixtus fotochaoten kochchaoten)
-# Twitter wird geparst um Bilder von Instagram zu finden
-zwitscher=(cccmz cccmzwi spookey lambda_ kventil lsanoj)
+suppe=(fnordpad gnd cccmz sixtus fotochaoten kochchaoten hipsterhackers)
 
 soupfeed() {
 	# Adresse zusammenstückeln
@@ -33,33 +31,10 @@ soupweb() {
 	done
 }
 
-twinsta() {
-	url=https://api.twitter.com/1/statuses/user_timeline.rss?screen_name=$name
-	twstr=$(wget -qO - $url | grep -w 'guid*' | grep -o 'http[^\<]*')
-	for line in $twstr; do
-		insta=$(wget -qO - $line | grep -o 'http://instagr[^\"\ ]*' )
-
-		if [ -n "$insta" ]; then
-			wget -qO - $insta | grep -w 'img class="photo"' | grep -o 'http://[^\"]*'
-		else
-			echo "https://raw.github.com/spookey/fnordpad/master/fnordpad.jpg"
-		fi
-		# this is awesome code!!1!
-		
-	done
-}
-
 # Bilderordner anlegen, falls er nicht existiert
 if [ ! -d "$ordner" ]; then
   mkdir -p $ordner
 fi
-
-for name in ${zwitscher[@]}; do
-
-	# Bilder von Instagram via Twitter
-	wget -qc -P $ordner $(twinsta $name)
-
-done
 
 for name in ${suppe[@]}; do
 
