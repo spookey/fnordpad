@@ -2,7 +2,7 @@
 
 import urllib, re, argparse
 
-class Soupparser(object):
+class soupparser(object):
 
 	# Vielen Dank an Frank für diese Awesome Regex!
 	__rx = r'(url|src)="(http://.\.asset\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'
@@ -41,7 +41,7 @@ class Soupparser(object):
 			images.extend(result[0])
 			since = result[1]
 			if self.__verbose:
-				print 'Finished Page %s of %s for %s' %(loop, loops, self.__soupuser)
+				print 'Finished Page %d of %d for %s' %(loop + 1, loops, self.__soupuser)
 		return images
 
 	def parse(self):
