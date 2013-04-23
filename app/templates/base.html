@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    {% if title %}<title>&bull; {{ title }} &bull;</title>{% else %}<title>&bull; &mdash; &bull;</title>{% endif %}
+    <link href="{{ url_for('static', filename='favicon.png') }}" rel="shortcut icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" media="screen">
+    {% if refreshing %}<meta http-equiv=refresh content="10" />{% endif %}
+    {% if image or thumbs %}<script src="{{ url_for('static', filename='justify.js') }}"></script>{% endif %}
+</head>
+<body style="background: rgb{{ getbg }};">
+    <div id="main">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div id="message">
+                    {% for message in messages %}<div>{{ message|safe }}</div>{% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

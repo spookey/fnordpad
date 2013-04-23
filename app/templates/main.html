@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div id="bar">
+            <p>{% if refreshing or thumbs %}<a href="{{ url_for('sort') }}" title="sort">fnordpad</a>{% else %}fnordpad{% endif %}</p><br />
+            <p>{{ datum }}</p>
+            <p>{{ uhr }}</p><br />
+            <p>images: {{ length }}</p><br />
+            {% if refreshing %}
+            <p>{{ yeah.next() }}</p><br />
+            <p>dhcp: {{ leases }}</p><br />
+            {% endif %}
+                {% if buttons and image %}
+                <p class="red">sortpad</p><br />
+                <p>{{ getbg }}</p><br />
+                <form method="POST" action="{{ url_for('sort') }}" class="vote">
+                    <input id="imagename" name="image" type="hidden" value="{{ image }}">
+                    <p><input id="plus" name="plus" type="submit" value="plus"></p>
+                    <p><input id="minus" name="minus" type="submit" value="minus"></p>
+                </form>
+                <br />
+                <p><a href="{{ url_for('sort') }}">Again</a></p>
+            {% endif %}
+            {% if buttons or thumbs %}
+                <p><a href="{{ url_for('index') }}">Home</a></p><br />
+                {% for f in ['public', 'unsorted', 'rejected'] %}
+                    <p><a href="{{ url_for('view', folder=f) }}">{{ f }}</a><p>
+                {% endfor %}<br />
+                {% if duplicates %}
+                    {% for d in duplicates %}
+                        <p>{{ d }}</p>
+                    {% endfor %}
+                <br />
+                {% endif %}
+            {% endif %}
+    </div>
+    {% if image %}
+    <div id=image>
+        <a href="{{ url_for('sort', folder=image.split('/')[1], image=image.split('/')[-1]) }}"><img src="{{ url_for('static', filename=image) }}" alt="{{ image }}" /></a>
+    </div>
+    {% endif %}
+    {% if thumbs %}
+    <p id="thumbs">
+        {% for t in thumbs %}
+            <span class="nail" title="{{ t.split('/')[-1] }}"><a href="{{ url_for('sort', folder=t.split('/')[1], image=t.split('/')[-1]) }}"><img src="{{ url_for('static', filename=t) }}" alt="{{ t.split('/')[-1] }}" /></a></span>
+        {% endfor %}
+    </p>
+    {% endif %}
+{% endblock %}

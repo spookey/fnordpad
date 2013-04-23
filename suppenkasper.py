@@ -1,32 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -.- coding: UTF-8 -.-
 
-from Parser import soupparser
+from parser import Soupparser
 import os, subprocess
 
-# Zielordner der Bilder
-targetfolder = os.path.expanduser('~/bilder')
+from config import p_unsorted, p_public, p_reject, soupusers
+from app.side import imagelist
+
 verbose = False
 
-soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'fotochaoten', 'kochchaoten', 'hipsterhackers']
+print imagelist(p_public)
 
 loadlist = []
 
 for user in soupusers:
-    sp = soupparser(user, 15, verbose)
+    sp = Soupparser(user, 15, verbose)
     loadlist.extend(sp.parse())
     del sp
 
-if not os.path.exists(targetfolder):
-    os.mkdir(targetfolder)
-
 for element in loadlist:
-    proc = ['wget', '-c', '-P', targetfolder, element]
+    proc = ['wget', '-c', '-P', p_unsorted, element]
 
     if verbose:
         proc.insert(1, '-v')
     else:
         proc.insert(1, '-nv')
 
-    subprocess.call(proc)
+    if not element.split('/')[-1] in imagelist(p_unsorted) +  imagelist(p_public) + imagelist(p_reject):
+        subprocess.call(proc)
 
