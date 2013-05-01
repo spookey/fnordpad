@@ -1,16 +1,23 @@
 # -.- coding: UTF-8 -.-
 
-from flask import render_template, url_for, flash, send_from_directory, request, redirect
+from flask import render_template, url_for, flash, send_from_directory, request, redirect, session, g
 from app import app
 from config import staticdir, p_unsorted, p_public, p_reject
-from side import getrandomimage, imagelist, pathimagelist, getnamedimage, getbg, datum, uhr, scrape, listnamedups, snapnamedups
+from side import getrandomimage, imagelist, pathimagelist, getnamedimage, getbg, datum, uhr, json_leases, listnamedups, snapnamedups
 import os
 from itertools import cycle
 
-app.jinja_env.globals.update(datum=datum())
-app.jinja_env.globals.update(uhr=uhr())
+@app.before_request
+def before_request():
+    if not 'served' in session:
+        session['served'] = 0
+    yeah = cycle(['it\'s', 'peanut', 'butter', 'jelly', 'time'])
+    app.jinja_env.globals.update(datum=datum())
+    app.jinja_env.globals.update(uhr=uhr())
+    app.jinja_env.globals.update(leases=json_leases())
+    app.jinja_env.globals.update(served=session['served'])
+
 app.jinja_env.globals.update(yeah=cycle(['it\'s', 'peanut', 'butter', 'jelly', 'time']))
-app.jinja_env.globals.update(leases='1337') #scrape('http://status.cccmz.de/current'))
 
 @app.route('/index/')
 @app.route('/')
@@ -18,8 +25,7 @@ def index():
     image = getrandomimage(p_public)
     app.jinja_env.globals.update(getbg=getbg(os.path.join(staticdir, image)))
     app.jinja_env.globals.update(length=len(imagelist(p_public)))
-    app.jinja_env.globals.update(datum=datum())
-    app.jinja_env.globals.update(uhr=uhr())
+    session['served'] += 1
     return render_template('main.html',
         title = 'fnordpad',
         image = image,

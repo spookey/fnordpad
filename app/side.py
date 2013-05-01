@@ -43,6 +43,7 @@ def snapnamedups(extension):
             if os.path.exists(image):
                 os.remove(image)
 
+# TODO
 def listfiledups():
     hashmap = {}
     for path, dirs, files in os.walk(os.path.join(staticdir, 'bilder/')):
@@ -77,5 +78,19 @@ def uhr():
 
 def scrape(url):
     import urllib2
-    response = urllib2.urlopen(url)
-    return response.read()
+    try:
+        response = urllib2.urlopen(url)
+        return response.read()
+    except Exception, e:
+        print 'Error: %s' %(e)
+        return 'error'
+
+def json_leases():
+    import json
+    try:
+        pull = json.loads(scrape('http://status.cccmz.de/raw'))
+        return pull['leases']['last']
+    except Exception, e:
+        print 'Error: %s' %(e)
+        return 'error'
+

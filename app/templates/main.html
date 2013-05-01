@@ -8,6 +8,7 @@
             {% if refreshing %}
             <p>{{ yeah.next() }}</p><br />
             <p>dhcp: {{ leases }}</p><br />
+            <p>served: {{ served }}</p><br />
             {% endif %}
                 {% if buttons and image %}
                 <p class="red">sortpad</p><br />
@@ -22,7 +23,7 @@
             {% endif %}
             {% if buttons or thumbs %}
                 <p><a href="{{ url_for('index') }}">Home</a></p><br />
-                {% for f in ['public', 'unsorted', 'rejected'] %}
+                {% for f in ['public', 'unsorted', 'reject'] %}
                     <p><a href="{{ url_for('view', folder=f) }}">{{ f }}</a><p>
                 {% endfor %}<br />
                 {% if duplicates %}
