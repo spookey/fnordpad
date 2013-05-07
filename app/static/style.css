@@ -114,6 +114,7 @@ a{
     top: 5%;
     right: 10px;
     height: 90%;
+    max-width: 10%;
     overflow: hidden;
 }
 
@@ -131,4 +132,10 @@ a{
     padding: 15px 0;
 }
 
-
+.scroll{
+    width: 175%;
+    /*margin: 0 -150%;*/
+    text-align: center;
+    -webkit-marquee: auto medium infinite scroll normal;
+    overflow-x: -webkit-marquee;
+}

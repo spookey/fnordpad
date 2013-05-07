@@ -11,13 +11,11 @@ from itertools import cycle
 def before_request():
     if not 'served' in session:
         session['served'] = 0
-    yeah = cycle(['it\'s', 'peanut', 'butter', 'jelly', 'time'])
     app.jinja_env.globals.update(datum=datum())
     app.jinja_env.globals.update(uhr=uhr())
     app.jinja_env.globals.update(leases=json_leases())
     app.jinja_env.globals.update(served=session['served'])
-
-app.jinja_env.globals.update(yeah=cycle(['it\'s', 'peanut', 'butter', 'jelly', 'time']))
+    app.jinja_env.globals.update(yeah='it\'s peanut butter jelly time')
 
 @app.route('/index/')
 @app.route('/')
