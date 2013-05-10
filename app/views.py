@@ -1,105 +1,55 @@
 # -.- coding: UTF-8 -.-
 
-from flask import render_template, url_for, flash, send_from_directory, request, redirect, session, g
+from flask import render_template, url_for, flash, redirect, send_from_directory, session
 from app import app
-from config import staticdir, p_unsorted, p_public, p_reject
-from side import getrandomimage, imagelist, pathimagelist, getnamedimage, getbg, datum, uhr, json_leases, listnamedups, snapnamedups
-import os
-from itertools import cycle
+from service import list_images, list_all_images, find_image_path, get_batch_of_images, get_sort_image, filedups, zapp_image
+from config import p_unsorted, p_public, p_reject
 
 @app.before_request
 def before_request():
     if not 'served' in session:
-        session['served'] = 0
-    app.jinja_env.globals.update(datum=datum())
-    app.jinja_env.globals.update(uhr=uhr())
-    app.jinja_env.globals.update(leases=json_leases())
-    app.jinja_env.globals.update(served=session['served'])
-    app.jinja_env.globals.update(yeah='it\'s peanut butter jelly time')
+        session['served'] = 0;
 
 @app.route('/index/')
 @app.route('/')
 def index():
-    image = getrandomimage(p_public)
-    app.jinja_env.globals.update(getbg=getbg(os.path.join(staticdir, image)))
-    app.jinja_env.globals.update(length=len(imagelist(p_public)))
     session['served'] += 1
     return render_template('main.html',
         title = 'fnordpad',
-        image = image,
-        refreshing = True,
+        images = get_batch_of_images(),
         )
 
+@app.route('/duplicates/')
+def duplicates():
+    return render_template('main.html',
+        title = 'duplicates',
+        duplicates = filedups(),
+        )
 
-@app.route('/sort/', methods=['GET', 'POST'])
-@app.route('/sort/<folder>/<image>', methods=['GET', 'POST'])
-def sort(folder=None, image=None):
+@app.route('/zapp/')
+def zapp():
+    zapp_image('filename')
+    return redirect(url_for('duplicates'))
 
-    if folder == 'public':
-        folder = p_public
-    elif folder == 'reject':
-        folder = p_reject
-    elif not folder or folder == 'unsorted':
-        folder = p_unsorted
-
-    if not image:
-        image = getrandomimage(folder)
-    else:
-        image = getnamedimage(folder, image)
-        print '\n\nsort called: sort/%s/%s' %(folder, image)
-
-    app.jinja_env.globals.update(getbg=getbg(os.path.join(staticdir, image)))
-    app.jinja_env.globals.update(length=len(imagelist(folder)))
-    flash('this: %s' %(image.split('/')[-1]))
-    if request.method == 'POST':
-        sourceimage = os.path.join(staticdir, request.form['image'])
-        cimage = sourceimage.split('/')[-1]
-
-        if os.path.exists(sourceimage):
-            if not cimage.endswith('fnordpad.jpg'):
-                if 'plus' in request.form:
-                    os.rename(sourceimage, os.path.join(p_public, cimage))
-                    flash('plus %s' %(cimage))
-                elif 'minus' in request.form:
-                    os.rename(sourceimage, os.path.join(p_reject, cimage))
-                    flash('minus %s' %(cimage))
-                else:
-                    flash('kaputt')
-            else:
-                flash('all done!')
+@app.route('/sort/')
+@app.route('/sort/<filename>')
+def sort(filename=None):
+    if not filename:
+        filename = get_sort_image()
+    if not filename in list_all_images():
+        filename = 'fnord.jpeg'
     return render_template('main.html',
         title = 'sortpad',
-        image = image,
-        buttons = True,
-        duplicates = listnamedups(),
+        sort = filename,
+        text = filename,
         )
 
-
-@app.route('/view/')
-@app.route('/view/<folder>')
-def view(folder=None):
-
-    if folder == 'public':
-        folder = p_public
-    elif folder == 'reject':
-        folder = p_reject
-    elif not folder or folder == 'unsorted':
-        folder = p_unsorted
-    else:
-        flash('<span class="red">%s</span> not found' %(folder))
-        return redirect(url_for('view'))
-
-    app.jinja_env.globals.update(length=len(imagelist(folder)))
-    flash('welcome in traffic hell!')
-    return render_template('main.html',
-        title = 'view',
-        thumbs = pathimagelist(folder),
-        )
-
-@app.route('/snap/name/')
-def snap():
-    snapnamedups('jpg')
-    return redirect('index')
+@app.route('/image/')
+@app.route('/image/<filename>')
+def image(filename=None):
+    if not filename or not filename in list_all_images():
+        filename = 'fnord.jpeg'
+    return send_from_directory(find_image_path(filename), filename)
 
 @app.errorhandler(404)
 def internal_error(error):

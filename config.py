@@ -6,11 +6,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 staticdir = os.path.join(basedir, 'app/static/')
 
-subf = 'app/static/bilder/'
-p_unsorted = os.path.join(basedir, subf, 'unsorted')
-p_public = os.path.join(basedir, subf, 'public')
-p_reject = os.path.join(basedir, subf, 'reject')
+p_folder = os.path.join(basedir, 'content')
+p_unsorted = os.path.join(p_folder, 'unsorted')
+p_public = os.path.join(p_folder, 'public')
+p_reject = os.path.join(p_folder, 'reject')
+i_default = os.path.join(p_folder, 'fnord.jpeg')
 
 SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 
+# Crawler
 soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'fotochaoten', 'kochchaoten', 'hipsterhackers']

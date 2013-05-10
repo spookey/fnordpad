@@ -2,7 +2,7 @@
 
 import urllib, re, argparse
 
-class Soupparser(object):
+class SoupParser(object):
 
     # Vielen Dank an Frank für diese Awesome Regex!
     __rx = r'(url|src)="(http://.\.asset\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'

@@ -1,6 +1,9 @@
 .*
+_*
 
-bilder/
+public/
+reject/
+unsorted/
 
 # https://github.com/adobe/source-code-pro
 fonts/

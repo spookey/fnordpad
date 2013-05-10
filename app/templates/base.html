@@ -5,16 +5,14 @@
     {% if title %}<title>&bull; {{ title }} &bull;</title>{% else %}<title>&bull; &mdash; &bull;</title>{% endif %}
     <link href="{{ url_for('static', filename='favicon.png') }}" rel="shortcut icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" media="screen">
-    {% if refreshing %}
-    <script type="text/javascript">
-        window.onload=setTimeout('window.location.reload();', 15000);
-    </script>
-    {% endif %}
-    {% if image or thumbs %}
+    {% if images or sort %}
     <script src="{{ url_for('static', filename='justify.js') }}"></script>
+    <script src="{{ url_for('static', filename='cycle.js') }}"></script>
+    <script src="{{ url_for('static', filename='start.js') }}"></script>
     {% endif %}
+
 </head>
-<body style="background: rgb{{ getbg }};">
+<body>
     <div id="main">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
