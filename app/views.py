@@ -63,6 +63,7 @@ def sort(filename=None):
     return render_template('main.html',
         title = 'sortpad',
         sort = filename,
+        len_left = len(list_images(p_unsorted)),
         )
 
 @app.route('/image/')

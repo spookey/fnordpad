@@ -36,7 +36,7 @@
 {% endif %}
 
 {% if sort %}
-    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome</div>
+    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome {% if len_left %}&mdash; Left: {{ len_left }}{% endif %}</div>
     <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
     <div id="vote">
         <form method="POST" action="{{ url_for('sort') }}" class="vote">

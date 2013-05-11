@@ -1,7 +1,9 @@
 # -.- coding: UTF-8 -.-
 
-import os, subprocess
+import sys, os, subprocess
 from parser import SoupParser
+
+sys.path.insert(0, '/var/www/fnordpad/')
 
 from config import p_unsorted, p_public, p_reject, soupusers
 from app.service import list_all_images
