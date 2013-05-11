@@ -8,12 +8,11 @@ function start()
     {
         cycle();
         justify();
-        console.info('start: images');
     }
     if(typeof(start_sort) != 'undefined' && start_sort != null)
     {
         justify();
-        console.info('start: sort');
+        shortcut();
     }
 }
 

@@ -10,7 +10,9 @@ function cycle()
         var index = 0;
 
         fadeImg(images[index], 0, true);
+        var current = parseInt(document.getElementById('served').innerHTML, 10);
         setInterval(function(){
+            document.getElementById('served').innerHTML = current + index + 1;
             index = (index + 1) % images.length;
             fadeImg(images[index], 0, true);
         }, delay);

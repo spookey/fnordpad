@@ -49,10 +49,18 @@ body{
 }
 
 a{
-    color: #268bd2
+    color: #268bd2;
 }
 
-#content{
+a:hover{
+    color: #2aa198;
+}
+
+a:visited{
+    color: #6c71c4;
+}
+
+#main{
     padding: 5px;
     width: auto;
     text-align: center;
@@ -68,18 +76,104 @@ a{
     display: none;
 }
 
-#text{
+.duplicate{
+    overflow: hidden;
+    position: relative;
+    float: left;
+    width: 300px;
+    height: 300px;
+    text-align: left;
+    border: 10px solid rgb(255, 255, 255, 0.9);
+    border-bottom: 45px rgb(255, 255, 255, 0.9);
+    border: 10px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 45px solid rgba(255, 255, 255, 0.9);
+    margin: 5px;
+    color: #000000;
+}
+
+.duplicate .text{
     position: absolute;
-    left: 10px;
-    bottom: 5%;
+    bottom: 5px;
+    left: 30px;
+}
+
+.duplicate:hover{
+    color: #ffffff;
+}
+
+.duplicate img{
+    position: relative;
+    width: 600px;
+    left: -50px
+}
+
+#bar, #message, #vote, #text{
+    background: rgb(128,128,128);
+    background: rgba(128,128,128,0.8);
+    position: fixed;
+    padding: 10px 5px;
+    border-radius: 5px;
     text-align: left;
 }
 
-#text img{
-    display: inline-block;
-    max-height: 150px;
+#bar{
+    right: 10px;
+    top: 5%;
+    bottom: 5%;
+    max-width: 125px;
+    overflow: hidden;
 }
 
-#error{
-    margin: 5%;
+#bar a{
+    color: #ffffff;
+    text-decoration: none;
 }
+
+#bar li{
+    padding: 3px 0;
+    list-style: none;
+    text-align: right;
+}
+
+#bar li[title='0']{
+    color: #000000;
+}
+
+#message{
+    left: 10px;
+    top: 5%;
+}
+
+#text{
+    left: 10px;
+    bottom: 5%;
+}
+
+#vote{
+    width: 20%;
+    left: 40%;
+    bottom: 5%;
+    text-align: center;
+
+}
+
+#vote input{
+    font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
+    font-size: 1.5em;
+    color: #000000;
+    background: #ffffff;
+    width: 40%;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    margin: 5px;
+    padding: 5px;
+}
+
+.scroll{
+    /*width: 200%;
+    margin: 0 -100%;
+    */text-align: left;
+    -webkit-marquee: auto medium infinite scroll normal;
+    overflow-x: -webkit-marquee;
+}
+

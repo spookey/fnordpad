@@ -1,22 +1,40 @@
 # -.- coding: UTF-8 -.-
 
-from flask import render_template, url_for, flash, redirect, send_from_directory, session
+from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app
-from service import list_images, list_all_images, find_image_path, get_batch_of_images, get_sort_image, filedups, zapp_image
+from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
 from config import p_unsorted, p_public, p_reject
+from itertools import cycle
+
+app.json = app.last_scrape = 0
 
 @app.before_request
 def before_request():
     if not 'served' in session:
-        session['served'] = 0;
+        session['served'] = 0
+
+scrolling = cycle(['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page intentionally left blank', 'Lorem ipsum dolor sit amet'])
 
 @app.route('/index/')
 @app.route('/')
 def index():
-    session['served'] += 1
+    if timestamp_now()/60 - 20 >= app.last_scrape/60:
+        app.json = json_status()
+        app.last_scrape = timestamp_now()
+    status = {
+        'scroll': scrolling.next(),
+        'served': session['served'],
+        'avail': len(list_images(p_public)),
+        'new': len(list_images(p_unsorted)),
+        'uhr': uhr(),
+        'datum': datum(),
+        'json': app.json if isinstance(app.json, dict) else None,
+        }
+    session['served'] += 23
     return render_template('main.html',
         title = 'fnordpad',
         images = get_batch_of_images(),
+        status = status,
         )
 
 @app.route('/duplicates/')
@@ -26,22 +44,25 @@ def duplicates():
         duplicates = filedups(),
         )
 
-@app.route('/zapp/')
-def zapp():
-    zapp_image('filename')
+@app.route('/zapp/<filename>')
+def zapp(filename=None):
+    if filename:
+        zapp_image(filename)
     return redirect(url_for('duplicates'))
 
-@app.route('/sort/')
-@app.route('/sort/<filename>')
+@app.route('/sort/', methods=['GET', 'POST'])
+@app.route('/sort/<filename>', methods=['GET', 'POST'])
 def sort(filename=None):
     if not filename:
         filename = get_sort_image()
     if not filename in list_all_images():
         filename = 'fnord.jpeg'
+    flash('this: %s' %(filename))
+    if request.method == 'POST':
+        move_image(request.form)
     return render_template('main.html',
         title = 'sortpad',
         sort = filename,
-        text = filename,
         )
 
 @app.route('/image/')

@@ -8,12 +8,16 @@
     {% if images or sort %}
     <script src="{{ url_for('static', filename='justify.js') }}"></script>
     <script src="{{ url_for('static', filename='cycle.js') }}"></script>
+    <script src="{{ url_for('static', filename='shortcut.js') }}"></script>
     <script src="{{ url_for('static', filename='start.js') }}"></script>
     {% endif %}
 
 </head>
 <body>
     <div id="main">
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div id="message">
@@ -21,9 +25,7 @@
                 </div>
             {% endif %}
         {% endwith %}
-        <div id="content">
-            {% block content %}{% endblock %}
-        </div>
+
     </div>
 
 </body>

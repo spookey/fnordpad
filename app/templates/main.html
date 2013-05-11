@@ -7,18 +7,66 @@
         <p><a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" /></a></p>
     {% endfor %}
     </div>
+    <div id="bar">
+        <ul>
+            <li><a href="{{ url_for('sort') }}">fnordpad</a></li>
+            {% if status %}
+                <li class="scroll">{{ status.scroll }}</li>
+                <li>{{ status.datum }}</li>
+                <li>{{ status.uhr }}</li>
+                <br />{% if status.json %}
+                    <br /><li>Network &larr;</li>
+                    <li>dhcp: {{ status.json.leases.last }}</li>
+                    {% for proto, val in status.json.sixfour.last %}
+                    <li>{{ proto }}: {{ val }}</li>
+                    {% endfor %}
+                    <br /><li>Devices &larr;</li>
+                    {% for device, stat in status.json.devices.last %}
+                        <li title="{{ stat }}">{{ device }}</li>
+                    {% endfor %}
+                    <br /><li>Energy &larr;</li>
+                    <li>watt: {{ status.json.energie.last }}</li>
+                <br />{% endif %}
+                <li>served: <span id="served">{{ status.served }}</span></li>
+                <li>available: {{ status.avail }}</li>
+                <li>unsorted: {{ status.new }}</li>
+            {% endif %}
+        </ul>
+    </div>
 {% endif %}
 
 {% if sort %}
+    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome</div>
     <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
+    <div id="vote">
+        <form method="POST" action="{{ url_for('sort') }}" class="vote">
+            <input id="imagename" name="image" type="hidden" value="{{ sort }}">
+                <input id="plus" name="plus" type="submit" value="+">
+                <input id="minus" name="minus" type="submit" value="-">
+        </form>
+    </div>
 {% endif %}
 
 {% if duplicates %}
-    <p id="text">{{ duplicates }}</p>
+    {% for duplicate in duplicates %}
+        <div class="duplicate">
+            <img src="{{ url_for('image', filename=duplicate.thumb) }}" alt="{{ duplicate.thumb }}" title="{{ duplicate.hash }}" />
+            <div class="text">
+                <big>{{ duplicate.hash }}</big>
+                <ol>
+                {% for dfile in duplicate.files%}
+                    <li><a href="{{ url_for('zapp', filename=dfile[1]) }}">{{ dfile[0] }} {{ dfile[1] }}</a></li>
+                {% endfor %}
+                </ol>
+                += {{ duplicate.len }}
+            </div>
+        </div>
+    {% endfor %}
+    <!-- <a href="{{ url_for('zapp', filename='all') }}" >kill all</a> -->
 {% endif %}
 
 {% if text %}
-    <p id="text">{{ text }}</p>
+    <div id="text">{{ text|safe }}</div>
 {% endif %}
 
 {% endblock %}
