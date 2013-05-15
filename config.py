@@ -13,6 +13,7 @@ p_reject = os.path.join(p_folder, 'reject')
 i_default = os.path.join(p_folder, 'fnord.jpeg')
 
 SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
+USE_X_SENDFILE = True
 
 # Crawler
 soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'fotochaoten', 'kochchaoten', 'hipsterhackers']
