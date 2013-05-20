@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    {% if title %}<title>&bull; {{ title }} &bull;</title>{% else %}<title>&bull; &mdash; &bull;</title>{% endif %}
+    <link href="{{ url_for('static', filename='favicon.png') }}" rel="shortcut icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" media="screen">
+    {% if images or sort %}
+    <script src="{{ url_for('static', filename='justify.js') }}"></script>
+    <script src="{{ url_for('static', filename='cycle.js') }}"></script>
+    <script src="{{ url_for('static', filename='shortcut.js') }}"></script>
+    <script src="{{ url_for('static', filename='start.js') }}"></script>
+    {% endif %}
+
+</head>
+<body>
+    <div id="main">
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div id="message">
+                    {% for message in messages %}<div>{{ message|safe }}</div>{% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    </div>
+
+</body>
+</html>
