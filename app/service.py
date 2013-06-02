@@ -64,13 +64,26 @@ def get_sort_image():
         pass
 
 def move_image(request):
-    if request['image'] in list_images(p_unsorted):
-        if 'plus' in request:
-            flash('plus: %s' %(request['image']))
-            os.rename(os.path.join(p_unsorted, request['image']), os.path.join(p_public, request['image']))
-        if 'minus' in request:
-            flash('minus: %s' %(request['image']))
-            os.rename(os.path.join(p_unsorted, request['image']), os.path.join(p_reject, request['image']))
+    if 'plus' in request:
+        target = p_public
+        if request['image'] in list_images(p_unsorted):
+            source = p_unsorted
+        elif request['image'] in list_images(p_public):
+            source = p_public
+        elif request['image'] in list_images(p_reject):
+            source = p_reject
+        flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
+    elif 'minus' in request:
+        target = p_reject
+        if request['image'] in list_images(p_unsorted):
+            source = p_unsorted
+        elif request['image'] in list_images(p_public):
+            source = p_public
+        elif request['image'] in list_images(p_reject):
+            source = p_reject
+        flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
+
+    os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
 
 
 def list_filedups():
