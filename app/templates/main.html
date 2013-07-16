@@ -17,8 +17,8 @@
                 <br />{% if status.json %}
                     <br /><li>Network &larr;</li>
                     <li>dhcp: {{ status.json.leases.last }}</li>
-                    {% for proto, val in status.json.sixfour.last %}
-                    <li>{{ proto }}: {{ val }}</li>
+                    {% for proto, val in status.json.traffic.last %}
+                    <li>{{ proto }}: {{ bytes_to_human_readable(val) }}</li>
                     {% endfor %}
                     <br /><li>Devices &larr;</li>
                     {% for device, stat in status.json.devices.last %}
@@ -36,7 +36,7 @@
 {% endif %}
 
 {% if sort %}
-    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome {% if len_left %}&mdash; Left: {{ len_left }}{% endif %}</div>
+    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome &mdash; Left: {{ len_left }}</div>
     <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
     <div id="vote">
         <form method="POST" action="{{ url_for('sort') }}" class="vote">

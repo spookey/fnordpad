@@ -5,6 +5,8 @@ public/
 reject/
 unsorted/
 
+logfile.log
+
 # https://github.com/adobe/source-code-pro
 fonts/
 

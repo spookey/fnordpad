@@ -4,7 +4,7 @@ import os, md5, hashlib
 from time import time, strftime
 from random import sample, choice
 from flask import flash
-from config import p_folder, p_unsorted, p_public, p_reject, i_default
+from config import logger, p_folder, p_unsorted, p_public, p_reject, i_default
 
 def list_images(folder=None):
     if not folder:
@@ -43,10 +43,9 @@ def zapp_image(image):
         if os.path.exists(os.path.join(find_image_path(image), image)):
             img = os.path.join(find_image_path(image), image)
             if img in get_dlist():
-                print 'zapp: %s' %(img)
+                logger.info('zapp: %s/%s' %(img.split('/')[-2], img.split('/')[-1]))
                 flash('zapp: %s' %(str(img.split('/')[-2:])))
                 os.remove(img)
-
 
 def get_batch_of_images():
     l = list_images(p_public)
@@ -83,6 +82,7 @@ def move_image(request):
             source = p_reject
         flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
 
+    logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
     os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
 
 
@@ -114,6 +114,13 @@ def datum():
 def timestamp_now():
     return int(time())
 
+def bytes_to_human_readable(num):
+    for x in ['bytes','KB','MB','GB']:
+        if num < 1024.0 and num > -1024.0:
+            return '%3.1f %s' %(num, x)
+        num /= 1024.0
+    return '%3.1f %s' % (num, 'TB')
+
 def scrape(url):
     import urllib2
     try:
@@ -128,10 +135,10 @@ def json_status():
     import json
     try:
         pull = json.loads(scrape('http://status.cccmz.de/raw'))
-        print '+json'
+        logger.info('json refreshed')
         return pull
     except Exception, e:
-        print '-json: %s' %(e)
+        logger.info('could not refresh json: %s' %(e))
         return 'error'
 
 
