@@ -2,11 +2,13 @@
 
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app
-from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
-from config import p_unsorted, p_public, p_reject
+from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, bytes_to_human_readable, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
+from config import logger, p_unsorted, p_public, p_reject
 from itertools import cycle
 
 app.json = app.last_scrape = 0
+app.jinja_env.globals.update(bytes_to_human_readable=bytes_to_human_readable)
+
 
 @app.before_request
 def before_request():
@@ -18,6 +20,7 @@ scrolling = cycle(['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page 
 @app.route('/index/')
 @app.route('/')
 def index():
+    logger.info('/index requested')
     if timestamp_now()/60 - 20 >= app.last_scrape/60:
         app.json = json_status()
         app.last_scrape = timestamp_now()
@@ -39,6 +42,7 @@ def index():
 
 @app.route('/duplicates/')
 def duplicates():
+    logger.info('/duplicates requested')
     return render_template('main.html',
         title = 'duplicates',
         duplicates = filedups(),
@@ -53,6 +57,7 @@ def zapp(filename=None):
 @app.route('/sort/', methods=['GET', 'POST'])
 @app.route('/sort/<filename>', methods=['GET', 'POST'])
 def sort(filename=None):
+    logger.info('/sort requested')
     if not filename:
         filename = get_sort_image()
     if not filename in list_all_images():
@@ -75,6 +80,7 @@ def image(filename=None):
 
 @app.errorhandler(404)
 def internal_error(error):
+    logger.error('404')
     flash('I checked twice!')
     return render_template('404.html',
         title = '404',
@@ -83,6 +89,7 @@ def internal_error(error):
 
 @app.errorhandler(500)
 def internal_error(error):
+    logger.error('500')
     return render_template('500.html',
         title = '500',
         refreshing = True,
