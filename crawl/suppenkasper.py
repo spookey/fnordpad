@@ -3,10 +3,21 @@
 import sys, os, subprocess
 from parser import SoupParser
 
-sys.path.insert(0, '/var/www/fnordpad/')
+sys.path.insert(0, '..')
 
-from config import logger, p_unsorted, p_public, p_reject, soupusers, crawl_verbose
+from config import p_unsorted, p_public, p_reject, soupusers, crawlog, crawl_verbose
 from app.service import list_all_images
+
+from logging import getLogger, Formatter, INFO
+from logging.handlers import RotatingFileHandler
+
+filehandler = RotatingFileHandler(crawlog, 'a', 1 * 1024 * 1024, 23)
+filehandler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s [in %(module)s.%(funcName)s:%(lineno)d]'))
+
+logger = getLogger('suppenkasper')
+logger.setLevel(INFO)
+logger.addHandler(filehandler)
+
 
 def load():
     loadlist = []
