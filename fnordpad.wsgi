@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -.- coding: UTF-8 -.-
 
-from sys.path import insert
-from os.path import realpath
-insert(0, realpath(__file__))
+import sys
+sys.path.insert(0, '/var/www/fnordpad/')
 
 from app import app as application
 
