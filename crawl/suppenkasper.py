@@ -5,8 +5,11 @@ from parser import SoupParser
 
 sys.path.insert(0, '/var/www/fnordpad/')
 
-from config import p_unsorted, p_public, p_reject, soupusers, crawl_verbose
+from config import p_unsorted, p_public, p_reject, soupusers, crawlog, crawl_verbose
 from app.service import list_all_images
+from log import init_logger
+
+logger = init_logger(crawlog, 'crawl')
 
 def load():
     loadlist = []
@@ -15,6 +18,7 @@ def load():
         sp = SoupParser(user, 15, crawl_verbose)
         loadlist.extend(sp.parse())
         del sp
+        logger.info('finished parsing for %s' %(user))
 
     for element in loadlist:
         proc = ['wget', '-c', '-P', p_unsorted, element]
@@ -26,9 +30,11 @@ def load():
 
         if not element.split('/')[-1] in list_all_images():
             subprocess.call(proc)
+            logger.info('downloaded %s' %(element))
         else:
             if crawl_verbose:
                 print 'Omitted %s' %(element.split('/')[-1])
+            logger.info('omitted %s' %(element))
 
 
 if __name__ == "__main__":
