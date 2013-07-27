@@ -7,49 +7,52 @@
         <p><a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" /></a></p>
     {% endfor %}
     </div>
+{% endif %}
+
+{% if status %}
     <div id="bar">
         <ul>
             <li><a href="{{ url_for('sort') }}">fnordpad</a></li>
-            {% if status %}
-                <li class="scroll">{{ status.scroll }}</li>
-                <li>{{ status.datum }}</li>
-                <li>{{ status.uhr }}</li>
-                {% if status.json %}
-                <br />
-                        <br /><li>Network &larr;</li>
-                        {% if status.json.leases.last %}
-                            <li>dhcp: {{ status.json.leases.last }}</li>
-                        {% endif %}
-                        {% if status.json.traffic_fmt.last %}
-                            {% for proto, val in status.json.traffic_fmt.last %}
-                            <li>{{ proto }}: {{ traffic_fmt }}</li>
-                            {% endfor %}
-                        {% endif %}
+            {% if status.scroll is defined %}<li class="scroll">{{ status.scroll }}</li>{% endif %}
+            {% if status.datum is defined %}<li>{{ status.datum }}</li>{% endif %}
+            {% if status.uhr is defined %}<li>{{ status.uhr }}</li>{% endif %}
+            {% if status.json is defined %}
+            <br />
+                    <br /><li>Network &larr;</li>
+                    {% if status.json.leases.last %}
+                        <li>dhcp: {{ status.json.leases.last }}</li>
+                    {% endif %}
+                    {% if status.json.traffic_fmt.last %}
+                        {% for proto, val in status.json.traffic_fmt.last %}
+                        <li>{{ proto }}: {{ val }}</li>
+                        {% endfor %}
+                    {% endif %}
 
-                        <br /><li>Devices &larr;</li>
-                        {% if status.json.devices.last %}
-                            {% for device, stat in status.json.devices.last %}
-                                <li title="{{ stat }}">{{ device }}</li>
-                            {% endfor %}
-                        {% endif %}
+                    <br /><li>Devices &larr;</li>
+                    {% if status.json.devices.last %}
+                        {% for device, stat in status.json.devices.last %}
+                            <li title="{{ stat }}">{{ device }}</li>
+                        {% endfor %}
+                    {% endif %}
 
-                        <br /><li>Energy &larr;</li>
-                        {% if status.json.energie.last %}
-                            <li>watt: {{ status.json.energie.last }}</li>
-                        {% endif %}
+                    <br /><li>Energy &larr;</li>
+                    {% if status.json.energie.last %}
+                        <li>watt: {{ status.json.energie.last }}</li>
+                    {% endif %}
 
-                {% endif %}
-                <br />
-                <li>served: <span id="served">{{ status.served }}</span></li>
-                <li>available: {{ status.avail }}</li>
-                <li>unsorted: {{ status.new }}</li>
+            {% endif %}
+            <br />
+            {% if status.served is defined %}<li>served: <span id="served">{{ status.served }}</span></li>{% endif %}
+            {% if status.avail is defined %}<li>available: {{ status.avail }}</li>{% endif %}
+            {% if status.new is defined %}
+                <li>unsorted: {% if status.new > 0 %}{{ status.new }}{% else %}none{% endif %}</li>
             {% endif %}
         </ul>
     </div>
 {% endif %}
 
 {% if sort %}
-    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome &mdash; Left: {{ len_left }}</div>
+    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %}</div>
     <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
     <div id="vote">
         <form method="POST" action="{{ url_for('sort') }}" class="vote">

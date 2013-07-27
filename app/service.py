@@ -63,13 +63,13 @@ def get_batch_of_images():
         n = 23 if len(l) > 23 else len(l)
         logger.info('returned a batch of %i images' %(n))
         return sample(l, n)
-    except TypeError:
-        logger.error('could not return any image')
+    except (TypeError, Exception) as e:
+        logger.error('could not return any image: %s' %(e))
         pass
 
 def get_sort_image():
     l = list_images(p_unsorted)
-    if len(l) > 1:
+    if len(l) > 0:
         logger.info('returned one image to sort')
         return choice(l)
     else:
@@ -85,6 +85,8 @@ def move_image(request):
             source = p_public
         elif request['image'] in list_images(p_reject):
             source = p_reject
+        else:
+            source = ''
         logger.info('plus: %s/%s', source.split('/')[-1], request['image'])
         flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
     elif 'minus' in request:
@@ -95,11 +97,20 @@ def move_image(request):
             source = p_public
         elif request['image'] in list_images(p_reject):
             source = p_reject
+        else:
+            source = ''
         logger.info('minus: %s/%s', source.split('/')[-1], request['image'])
         flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
 
-    os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
-    logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
+    try:
+        os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
+    except (OSError, Exception) as e:
+        logger.error('could not move: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
+    else:
+        logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
+
+
+
 
 def list_filedups():
     hashmap = {}
@@ -147,7 +158,7 @@ def json_status():
         pull = json.loads(scrape('http://status.cccmz.de/raw'))
         logger.info('json refreshed')
         return pull
-    except Exception, e:
+    except Exception as e:
         logger.info('could not refresh json: %s' %(e))
         return 'error'
 

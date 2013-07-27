@@ -31,5 +31,5 @@ SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 USE_X_SENDFILE = True
 
 # Crawler
-soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'lambda']
+soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'lambda', 'againstreality', 'kv0', 'maesto', 'i8br', 'amenthes', 'murmeltier', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'rocco-the-spoon', 'saper', 'tokei', 'lsanoj', 'markusbec', 'sapling']
 crawl_verbose = False
