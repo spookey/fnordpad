@@ -1,0 +1,8 @@
+#!/bin/bash
+xset s off -display :0 &
+xset -dpms -display :0 &
+xset s noblank -display :0 &
+unclutter -idle 3 -root &
+xsetroot -solid darkgrey &
+surf file:///srv/fnordpad/etc/frame.html &
+exec dwm 
