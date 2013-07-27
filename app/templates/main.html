@@ -14,19 +14,32 @@
                 <li class="scroll">{{ status.scroll }}</li>
                 <li>{{ status.datum }}</li>
                 <li>{{ status.uhr }}</li>
-                <br />{% if status.json %}
-                    <br /><li>Network &larr;</li>
-                    <li>dhcp: {{ status.json.leases.last }}</li>
-                    {% for proto, val in status.json.traffic.last %}
-                    <li>{{ proto }}: {{ bytes_to_human_readable(val) }}</li>
-                    {% endfor %}
-                    <br /><li>Devices &larr;</li>
-                    {% for device, stat in status.json.devices.last %}
-                        <li title="{{ stat }}">{{ device }}</li>
-                    {% endfor %}
-                    <br /><li>Energy &larr;</li>
-                    <li>watt: {{ status.json.energie.last }}</li>
-                <br />{% endif %}
+                {% if status.json %}
+                <br />
+                        <br /><li>Network &larr;</li>
+                        {% if status.json.leases.last %}
+                            <li>dhcp: {{ status.json.leases.last }}</li>
+                        {% endif %}
+                        {% if status.json.traffic_fmt.last %}
+                            {% for proto, val in status.json.traffic_fmt.last %}
+                            <li>{{ proto }}: {{ traffic_fmt }}</li>
+                            {% endfor %}
+                        {% endif %}
+
+                        <br /><li>Devices &larr;</li>
+                        {% if status.json.devices.last %}
+                            {% for device, stat in status.json.devices.last %}
+                                <li title="{{ stat }}">{{ device }}</li>
+                            {% endfor %}
+                        {% endif %}
+
+                        <br /><li>Energy &larr;</li>
+                        {% if status.json.energie.last %}
+                            <li>watt: {{ status.json.energie.last }}</li>
+                        {% endif %}
+
+                {% endif %}
+                <br />
                 <li>served: <span id="served">{{ status.served }}</span></li>
                 <li>available: {{ status.avail }}</li>
                 <li>unsorted: {{ status.new }}</li>

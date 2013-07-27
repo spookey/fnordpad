@@ -17,7 +17,8 @@ def list_images(folder=None):
         for filename in os.listdir(folder):
             if any(filename.endswith(x) for x in ('jpeg', 'jpg', 'gif', 'png')):
                 if os.path.getsize(os.path.join(folder, filename)) > 0:
-                    result.append(filename)
+                    if find_image_path(filename) != i_default:
+                        result.append(filename)
         return result
 
 # crawler
@@ -116,13 +117,6 @@ def datum():
 
 def timestamp_now():
     return int(time())
-
-def bytes_to_human_readable(num):
-    for x in ['bytes','KB','MB','GB']:
-        if num < 1024.0 and num > -1024.0:
-            return '%3.1f %s' %(num, x)
-        num /= 1024.0
-    return '%3.1f %s' % (num, 'TB')
 
 def scrape(url):
     import urllib2

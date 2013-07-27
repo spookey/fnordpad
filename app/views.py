@@ -2,7 +2,7 @@
 
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app
-from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, bytes_to_human_readable, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
+from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
 from config import logfile, p_unsorted, p_public, p_reject
 from log import init_logger
 from itertools import cycle
@@ -10,7 +10,6 @@ from itertools import cycle
 logger = init_logger(logfile, 'fnordpad')
 
 app.json = app.last_scrape = 0
-app.jinja_env.globals.update(bytes_to_human_readable=bytes_to_human_readable)
 
 
 @app.before_request
