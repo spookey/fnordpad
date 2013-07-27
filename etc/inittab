@@ -1,0 +1,1 @@
+1:2345:respawn:/sbin/mingetty --autologin moria --noclear tty1
