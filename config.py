@@ -1,6 +1,8 @@
 # -.- coding: UTF-8 -.-
 
 import os
+from logging import getLogger, Formatter, INFO
+from logging.handlers import RotatingFileHandler
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,7 +15,14 @@ p_reject = os.path.join(p_folder, 'reject')
 i_default = os.path.join(p_folder, 'fnord.jpeg')
 
 logfile = os.path.join(basedir, 'logfile.log')
-crawlog = os.path.join(basedir, 'crawl/logfile.log')
+
+filehandler = RotatingFileHandler(logfile, 'a', 1 * 1024 * 1024, 23)
+filehandler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s [in %(module)s.%(funcName)s:%(lineno)d]'))
+
+logger = getLogger('fnordpad')
+logger.setLevel(INFO)
+logger.addHandler(filehandler)
+
 
 #>>> import os
 #>>> os.urandom(24)

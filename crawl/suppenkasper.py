@@ -5,11 +5,8 @@ from parser import SoupParser
 
 sys.path.insert(0, '/srv/fnordpad/')
 
-from config import p_unsorted, p_public, p_reject, soupusers, crawlog, crawl_verbose
+from config import p_unsorted, p_public, p_reject, soupusers, logger, crawl_verbose
 from app.service import list_all_images
-from log import init_logger
-
-logger = init_logger(crawlog, 'crawl')
 
 def load():
     loadlist = []

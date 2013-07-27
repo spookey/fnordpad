@@ -3,14 +3,10 @@
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app
 from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
-from config import logfile, p_unsorted, p_public, p_reject
-from log import init_logger
+from config import logger, p_unsorted, p_public, p_reject, i_default
 from itertools import cycle
 
-logger = init_logger(logfile, 'fnordpad')
-
 app.json = app.last_scrape = 0
-
 
 @app.before_request
 def before_request():
@@ -22,7 +18,6 @@ scrolling = cycle(['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page 
 @app.route('/index/')
 @app.route('/')
 def index():
-    logger.info('/index requested')
     if timestamp_now()/60 - 20 >= app.last_scrape/60:
         app.json = json_status()
         app.last_scrape = timestamp_now()
@@ -36,6 +31,7 @@ def index():
         'json': app.json if isinstance(app.json, dict) else None,
         }
     session['served'] += 23
+    logger.info('/index requested')
     return render_template('main.html',
         title = 'fnordpad',
         images = get_batch_of_images(),
@@ -60,13 +56,14 @@ def zapp(filename=None):
 @app.route('/sort/<filename>', methods=['GET', 'POST'])
 def sort(filename=None):
     logger.info('/sort requested')
+    if request.method == 'POST':
+        move_image(request.form)
     if not filename:
         filename = get_sort_image()
     if not filename in list_all_images():
-        filename = 'fnord.jpeg'
+        filename = i_default.split('/')[-1]
     flash('this: %s' %(filename))
-    if request.method == 'POST':
-        move_image(request.form)
+    logger.info('this %s' %(filename))
     return render_template('main.html',
         title = 'sortpad',
         sort = filename,
@@ -77,12 +74,13 @@ def sort(filename=None):
 @app.route('/image/<filename>')
 def image(filename=None):
     if not filename or not filename in list_all_images():
-        filename = 'fnord.jpeg'
+        logger.error('requested image not found: %s fallback to %s' %(filename, i_default.split('/')[-1]))
+        filename = i_default.split('/')[-1]
     return send_from_directory(find_image_path(filename), filename)
 
 @app.errorhandler(404)
 def internal_error(error):
-    logger.error('404')
+    logger.error('404: %s' %(error))
     flash('I checked twice!')
     return render_template('404.html',
         title = '404',
@@ -91,7 +89,7 @@ def internal_error(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    logger.error('500')
+    logger.error('500: %s' %(error))
     return render_template('500.html',
         title = '500',
         refreshing = True,

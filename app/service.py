@@ -4,10 +4,7 @@ import os, md5, hashlib
 from time import time, strftime
 from random import sample, choice
 from flask import flash
-from config import logfile, p_folder, p_unsorted, p_public, p_reject, i_default
-from log import init_logger
-
-logger = init_logger(logfile, 'fnordpad')
+from config import logger, p_folder, p_unsorted, p_public, p_reject, i_default
 
 def list_images(folder=None):
     if not folder:
@@ -19,7 +16,14 @@ def list_images(folder=None):
                 if os.path.getsize(os.path.join(folder, filename)) > 0:
                     if find_image_path(filename) != i_default:
                         result.append(filename)
+                    else:
+                        logger.info('omitting: image is i_default: %s' %(filename))
+                else:
+                    logger.info('omitting: image is 0 bytes: delete it: %s' %(find_image_path(filename)))
         return result
+    else:
+        logger.error('folder not found: %s' %(folder))
+
 
 # crawler
 def list_all_images():
@@ -29,6 +33,7 @@ def find_image_path(image):
     for path, dirs, files in os.walk(p_folder):
         if image in files:
             return path
+    logger.info('image %s not found - returning p_folder: %s' %(image, p_folder))
     return p_folder
 
 def zapp_image(image):
@@ -40,30 +45,35 @@ def zapp_image(image):
                     dups.append(os.path.join(p_folder, x[0], x[1]))
         return dups
 
-    if image == 'all':
-        for v in get_dlist():
-            zapp_image(v)
+    logger.info('zapp_image: %s' %(image))
+    if os.path.exists(os.path.join(find_image_path(image), image)):
+        img = os.path.join(find_image_path(image), image)
+        if img in get_dlist():
+            logger.info('zapp: %s/%s' %(img.split('/')[-2], image))
+            flash('zapp: %s' %(str(img.split('/')[-2:])))
+            os.remove(img)
+        else:
+            logger.info('image was no duplicate: %s' %(img))
     else:
-        if os.path.exists(os.path.join(find_image_path(image), image)):
-            img = os.path.join(find_image_path(image), image)
-            if img in get_dlist():
-                logger.info('zapp: %s/%s' %(img.split('/')[-2], img.split('/')[-1]))
-                flash('zapp: %s' %(str(img.split('/')[-2:])))
-                os.remove(img)
+        logger.error('image not found: %s' %(image))
 
 def get_batch_of_images():
     l = list_images(p_public)
     try:
         n = 23 if len(l) > 23 else len(l)
+        logger.info('returned a batch of %i images' %(n))
         return sample(l, n)
     except TypeError:
+        logger.error('could not return any image')
         pass
 
 def get_sort_image():
     l = list_images(p_unsorted)
     if len(l) > 1:
+        logger.info('returned one image to sort')
         return choice(l)
     else:
+        logger.error('could not return any image to sort')
         pass
 
 def move_image(request):
@@ -75,6 +85,7 @@ def move_image(request):
             source = p_public
         elif request['image'] in list_images(p_reject):
             source = p_reject
+        logger.info('plus: %s/%s', source.split('/')[-1], request['image'])
         flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
     elif 'minus' in request:
         target = p_reject
@@ -84,11 +95,11 @@ def move_image(request):
             source = p_public
         elif request['image'] in list_images(p_reject):
             source = p_reject
+        logger.info('minus: %s/%s', source.split('/')[-1], request['image'])
         flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
 
-    logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
     os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
-
+    logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
 
 def list_filedups():
     hashmap = {}
@@ -100,6 +111,7 @@ def list_filedups():
             h = hashlib.md5(d).hexdigest()
             filelist = hashmap.setdefault(h, [])
             filelist.append(fullname)
+    logger.info('generated net hashmap')
     return hashmap
 
 def filedups():
@@ -107,6 +119,7 @@ def filedups():
     for md5_sum, dups in list_filedups().iteritems():
         if len(dups) > 1:
             result.append({'hash': md5_sum, 'len': len(dups), 'files': [d.split('/')[-2:] for d in dups], 'thumb': dups[-1].split('/')[-1]})
+            logger.info('found %i duplicate files' %(len(result)))
     return result
 
 def uhr():
@@ -122,11 +135,11 @@ def scrape(url):
     import urllib2
     try:
         response = urllib2.urlopen(url)
-        print '+scrape'
+        logger.info('scrape: %s' %(url))
         return response.read()
-    except Exception, e:
-        print '-scrape: %s' %(e)
+    except Exception as e:
         return 'error'
+        logger.info('scrape error: %s  %s' %(url, e))
 
 def json_status():
     import json
