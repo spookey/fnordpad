@@ -14,10 +14,7 @@ def list_images(folder=None):
         for filename in os.listdir(folder):
             if any(filename.endswith(x) for x in ('jpeg', 'jpg', 'gif', 'png')):
                 if os.path.getsize(os.path.join(folder, filename)) > 0:
-                    if find_image_path(filename) != i_default:
                         result.append(filename)
-                    else:
-                        logger.info('omitting: image is i_default: %s' %(filename))
                 else:
                     logger.info('omitting: image is 0 bytes: delete it: %s' %(find_image_path(filename)))
         return result
@@ -69,9 +66,13 @@ def get_batch_of_images():
 
 def get_sort_image():
     l = list_images(p_unsorted)
-    if len(l) > 0:
-        logger.info('returned one image to sort')
-        return choice(l)
+    if len(l) >= 1:
+        image = choice(l)
+        if find_image_path(image) != i_default:
+            logger.info('returned one image to sort')
+            return image
+        else:
+            logger.info('omitting: image is i_default: %s' %(filename))
     else:
         logger.error('could not return any image to sort')
         pass
@@ -86,7 +87,8 @@ def move_image(request):
         elif request['image'] in list_images(p_reject):
             source = p_reject
         else:
-            source = ''
+            logger.error('request makes no sense: %s' %(request))
+            return
         logger.info('plus: %s/%s', source.split('/')[-1], request['image'])
         flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
     elif 'minus' in request:
@@ -98,9 +100,13 @@ def move_image(request):
         elif request['image'] in list_images(p_reject):
             source = p_reject
         else:
-            source = ''
+            logger.error('request makes no sense: %s' %(request))
+            return
         logger.info('minus: %s/%s', source.split('/')[-1], request['image'])
         flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
+    else:
+        logger.error('request makes no sense: %s' %(request))
+        return
 
     try:
         os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))

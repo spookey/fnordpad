@@ -11,6 +11,7 @@ app.json = app.last_scrape = 0
 @app.before_request
 def before_request():
     if not 'served' in session:
+        logger.info('set served images cookie')
         session['served'] = 0
 
 scrolling = cycle(['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page intentionally left blank', 'Lorem ipsum dolor sit amet'])
@@ -81,7 +82,7 @@ def image(filename=None):
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(staticdir, 'favicon.ico',
-        mimetype='image/ico'
+        mimetype='image/x-icon',
     )
 
 @app.errorhandler(404)
