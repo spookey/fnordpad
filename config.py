@@ -28,8 +28,9 @@ logger.addHandler(filehandler)
 #>>> os.urandom(24)
 SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 
-# USE_X_SENDFILE = True
+USE_X_SENDFILE = True
 
 # Crawler
 soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'lambda', 'againstreality', 'kv0', 'maesto', 'i8br', 'amenthes', 'murmeltier', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'rocco-the-spoon', 'saper', 'tokei', 'lsanoj', 'markusbec', 'sapling']
+crawl_pages = 50
 crawl_verbose = False

@@ -88,7 +88,7 @@ def move_image(request):
             source = p_reject
         else:
             logger.error('request makes no sense: %s' %(request))
-            return
+            pass
         logger.info('plus: %s/%s', source.split('/')[-1], request['image'])
         flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
     elif 'minus' in request:
@@ -101,12 +101,12 @@ def move_image(request):
             source = p_reject
         else:
             logger.error('request makes no sense: %s' %(request))
-            return
+            pass
         logger.info('minus: %s/%s', source.split('/')[-1], request['image'])
         flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
     else:
         logger.error('request makes no sense: %s' %(request))
-        return
+        pass
 
     try:
         os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
