@@ -3,7 +3,7 @@
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app
 from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
-from config import logger, p_unsorted, p_public, p_reject, i_default
+from config import logger, p_unsorted, p_public, p_reject, staticdir, i_default
 from itertools import cycle
 
 app.json = app.last_scrape = 0
@@ -77,6 +77,12 @@ def image(filename=None):
         logger.error('requested image not found: %s fallback to %s' %(filename, i_default.split('/')[-1]))
         filename = i_default.split('/')[-1]
     return send_from_directory(find_image_path(filename), filename)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(staticdir, 'favicon.ico',
+        mimetype='image/ico'
+    )
 
 @app.errorhandler(404)
 def internal_error(error):
