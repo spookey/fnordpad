@@ -3,7 +3,7 @@
 import sys, os, subprocess
 from parser import SoupParser
 
-sys.path.insert(0, '/srv/fnordpad/')
+sys.path.insert(0, '/srv/www/fnordpad/')
 
 from config import p_unsorted, p_public, p_reject, soupusers, logger, crawl_verbose
 from app.service import list_all_images
