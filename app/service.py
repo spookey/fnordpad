@@ -4,7 +4,8 @@ import os, md5, hashlib
 from time import time, strftime
 from random import sample, choice
 from flask import flash
-from config import logger, p_folder, p_unsorted, p_public, p_reject, i_default
+from log import logger
+from config import p_folder, p_unsorted, p_public, p_reject, i_default
 
 def list_images(folder=None):
     if not folder:

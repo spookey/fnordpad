@@ -1,9 +1,9 @@
 # -.- coding: UTF-8 -.-
 
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
-from app import app
+from app import app, logger
 from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
-from config import logger, p_unsorted, p_public, p_reject, staticdir, i_default
+from config import p_unsorted, p_public, p_reject, staticdir, i_default
 from itertools import cycle
 
 app.json = app.last_scrape = 0
@@ -88,6 +88,7 @@ def favicon():
 @app.errorhandler(404)
 def internal_error(error):
     logger.error('404: %s' %(error))
+    logger.exception(error)
     flash('I checked twice!')
     return render_template('404.html',
         title = '404',
@@ -97,6 +98,7 @@ def internal_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     logger.error('500: %s' %(error))
+    logger.exception(error)
     return render_template('500.html',
         title = '500',
         refreshing = True,
