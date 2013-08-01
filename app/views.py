@@ -29,7 +29,7 @@ def index():
         'new': len(list_images(p_unsorted)),
         'uhr': uhr(),
         'datum': datum(),
-        'json': app.json if isinstance(app.json, dict) else None,
+        'json': app.json if isinstance(app.json, dict) else 0,
         }
     session['served'] += 23
     logger.info('/index requested')
@@ -92,7 +92,7 @@ def internal_error(error):
     flash('I checked twice!')
     return render_template('404.html',
         title = '404',
-        refreshing = True,
+        error = True,
         ), 404
 
 @app.errorhandler(500)
@@ -101,5 +101,5 @@ def internal_error(error):
     logger.exception(error)
     return render_template('500.html',
         title = '500',
-        refreshing = True,
+        error = True,
         ), 500
