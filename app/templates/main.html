@@ -19,24 +19,24 @@
             {% if status.json is defined %}
             <br />
                     <br /><li>Network &larr;</li>
-                    {% if status.json.leases.last %}
+                    {% if status.json.leases is defined and status.json.leases.last is defined %}
                         <li>dhcp: {{ status.json.leases.last }}</li>
                     {% endif %}
-                    {% if status.json.traffic_fmt.last %}
+                    {% if status.json.traffic_fmt is defined and status.json.traffic_fmt.last is defined  %}
                         {% for proto, val in status.json.traffic_fmt.last %}
                         <li>{{ proto }}: {{ val }}</li>
                         {% endfor %}
                     {% endif %}
 
                     <br /><li>Devices &larr;</li>
-                    {% if status.json.devices.last %}
+                    {% if status.json.devices is defined and status.json.devices.last is defined %}
                         {% for device, stat in status.json.devices.last %}
                             <li title="{{ stat }}">{{ device }}</li>
                         {% endfor %}
                     {% endif %}
 
                     <br /><li>Energy &larr;</li>
-                    {% if status.json.energie.last %}
+                    {% if status.json.energie is defined and status.json.energie.last is defined %}
                         <li>watt: {{ status.json.energie.last }}</li>
                     {% endif %}
 
