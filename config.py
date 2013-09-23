@@ -12,7 +12,8 @@ p_public = os.path.join(p_folder, 'public')
 p_reject = os.path.join(p_folder, 'reject')
 i_default = os.path.join(p_folder, 'fnord.jpeg')
 
-logfile = os.path.join(basedir, 'logfile.log')
+logdir = os.path.join(basedir, 'logs')
+logfile = os.path.join(logdir, 'logfile.log')
 
 #>>> import os
 #>>> os.urandom(24)
