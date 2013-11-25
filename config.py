@@ -1,19 +1,27 @@
 # -.- coding: UTF-8 -.-
 
-import os
+from os import path
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = path.abspath(path.dirname(__file__))
 
-staticdir = os.path.join(basedir, 'app/static/')
+staticdir = path.join(basedir, 'app/static/')
+cachedir = path.join(basedir, 'cache')
+c_file = path.join(cachedir, 'content.json')
 
-p_folder = os.path.join(basedir, 'content')
-p_unsorted = os.path.join(p_folder, 'unsorted')
-p_public = os.path.join(p_folder, 'public')
-p_reject = os.path.join(p_folder, 'reject')
-i_default = os.path.join(p_folder, 'fnord.jpeg')
+contentdir = path.join(basedir, 'content')
+i_default = 'fnord.jpeg'
+p_unsorted = path.join(contentdir, 'unsorted')
+p_public = path.join(contentdir, 'public')
+p_reject = path.join(contentdir, 'reject')
+folder_list = zip([p_unsorted, p_public, p_reject], ['unsorted', 'public', 'reject'])
 
-logdir = os.path.join(basedir, 'logs')
-logfile = os.path.join(logdir, 'logfile.log')
+batch_size = 23
+
+statusjsonurl = 'http://status.cccmz.de/raw'
+
+
+logdir = path.join(basedir, 'logs')
+logfile = path.join(logdir, 'logfile.log')
 
 #>>> import os
 #>>> os.urandom(24)
@@ -24,4 +32,5 @@ USE_X_SENDFILE = True
 # Crawler
 soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'lambda', 'againstreality', 'kv0', 'maesto', 'i8br', 'amenthes', 'murmeltier', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'rocco-the-spoon', 'saper', 'tokei', 'lsanoj', 'markusbec', 'sapling']
 crawl_pages = 50
-crawl_verbose = False
+
+taglines = ['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page intentionally left blank', 'Lorem ipsum dolor sit amet']

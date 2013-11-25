@@ -1,144 +1,28 @@
 # -.- coding: UTF-8 -.-
 
-import os, md5, hashlib
+from os import path, listdir, rename
+from json import dumps, loads
 from time import time, strftime
 from random import sample, choice
+from urllib2 import urlopen
 from flask import flash
+from config import c_file, folder_list, i_default, contentdir, batch_size, p_public, p_reject, statusjsonurl
 from log import logger
-from config import p_folder, p_unsorted, p_public, p_reject, i_default
 
-def list_images(folder=None):
-    if not folder:
-        folder = p_unsorted
-    if os.path.exists(folder):
-        result = []
-        for filename in os.listdir(folder):
-            if any(filename.endswith(x) for x in ('jpeg', 'jpg', 'gif', 'png')):
-                if os.path.getsize(os.path.join(folder, filename)) > 0:
-                        result.append(filename)
-                else:
-                    logger.info('omitting: image is 0 bytes: delete it: %s' %(find_image_path(filename)))
-        return result
-    else:
-        logger.error('folder not found: %s' %(folder))
-
-
-# crawler
-def list_all_images():
-    return [item for sublist in [list_images(x) for x in (p_unsorted, p_public, p_reject)] for item in sublist]
-
-def find_image_path(image):
-    for path, dirs, files in os.walk(p_folder):
-        if image in files:
-            return path
-    logger.info('image %s not found - returning p_folder: %s' %(image, p_folder))
-    return p_folder
-
-def zapp_image(image):
-    def get_dlist():
-        dups = []
-        for v in filedups():
-            for x in v['files']:
-                if len(x) > 1:
-                    dups.append(os.path.join(p_folder, x[0], x[1]))
-        return dups
-
-    logger.info('zapp_image: %s' %(image))
-    if os.path.exists(os.path.join(find_image_path(image), image)):
-        img = os.path.join(find_image_path(image), image)
-        if img in get_dlist():
-            logger.info('zapp: %s/%s' %(img.split('/')[-2], image))
-            flash('zapp: %s' %(str(img.split('/')[-2:])))
-            os.remove(img)
-        else:
-            logger.info('image was no duplicate: %s' %(img))
-    else:
-        logger.error('image not found: %s' %(image))
-
-def get_batch_of_images():
-    l = list_images(p_public)
-    try:
-        n = 23 if len(l) > 23 else len(l)
-        logger.info('returned a batch of %i images' %(n))
-        return sample(l, n)
-    except (TypeError, Exception) as e:
-        logger.error('could not return any image: %s' %(e))
-        pass
-
-def get_sort_image():
-    l = list_images(p_unsorted)
-    if len(l) >= 1:
-        image = choice(l)
-        if find_image_path(image) != i_default:
-            logger.info('returned one image to sort')
-            return image
-        else:
-            logger.info('omitting: image is i_default: %s' %(filename))
-    else:
-        logger.error('could not return any image to sort')
-        pass
-
-def move_image(request):
-    if 'plus' in request:
-        target = p_public
-        if request['image'] in list_images(p_unsorted):
-            source = p_unsorted
-        elif request['image'] in list_images(p_public):
-            source = p_public
-        elif request['image'] in list_images(p_reject):
-            source = p_reject
-        else:
-            logger.error('request makes no sense: %s' %(request))
+def write_json(filename, data):
+    with open(filename, 'w') as f:
+        try:
+            f.write(dumps(data, indent=2))
+        except Exception:
             pass
-        logger.info('plus: %s/%s', source.split('/')[-1], request['image'])
-        flash('plus: %s/%s' %(source.split('/')[-1], request['image']))
-    elif 'minus' in request:
-        target = p_reject
-        if request['image'] in list_images(p_unsorted):
-            source = p_unsorted
-        elif request['image'] in list_images(p_public):
-            source = p_public
-        elif request['image'] in list_images(p_reject):
-            source = p_reject
-        else:
-            logger.error('request makes no sense: %s' %(request))
-            pass
-        logger.info('minus: %s/%s', source.split('/')[-1], request['image'])
-        flash('minus: %s/%s' %(source.split('/')[-1], request['image']))
-    else:
-        logger.error('request makes no sense: %s' %(request))
-        pass
 
-    try:
-        os.rename(os.path.join(source, request['image']), os.path.join(target, request['image']))
-    except (OSError, Exception) as e:
-        logger.error('could not move: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
-    else:
-        logger.info('moved: %s -> %s' %(os.path.join(source, request['image']), os.path.join(target, request['image'])))
-
-
-
-
-def list_filedups():
-    hashmap = {}
-    for path, dirs, files in os.walk(p_folder):
-        for filename in files:
-            fullname = os.path.join(path, filename)
-            with open(fullname) as f:
-                d = f.read()
-            h = hashlib.md5(d).hexdigest()
-            filelist = hashmap.setdefault(h, [])
-            filelist.append(fullname)
-    logger.info('generated net hashmap')
-    return hashmap
-
-def filedups():
-    result = []
-    for md5_sum, dups in list_filedups().iteritems():
-        if len(dups) > 1:
-            result.append({'hash': md5_sum, 'len': len(dups), 'files': [d.split('/')[-2:] for d in dups], 'thumb': dups[-1].split('/')[-1]})
-            logger.info('found %i duplicate files' %(len(result)))
-    return result
+def read_json(filename):
+    if path.exists(filename):
+        with open(filename, 'r') as f:
+            try:
+                return loads(f.read())
+            except Exception:
+                pass
 
 def uhr():
     return strftime('%H:%M')
@@ -149,25 +33,89 @@ def datum():
 def timestamp_now():
     return int(time())
 
+def list_images(folder):
+    if path.exists(folder):
+        for filename in listdir(folder):
+            if any(filename.endswith(x) for x in ('jpeg', 'jpg', 'png', 'gif')):
+                if(path.getsize(path.join(folder, filename)) > 0):
+                    yield filename
+
+def mk_content_cache():
+    cache = {'timestamp': timestamp_now()}
+    for folder, name in folder_list:
+        listing = list_images(folder)
+        cache[name] = [p for p in listing]
+    write_json(c_file, cache)
+
+def read_cache():
+    cache = read_json(c_file)
+    if cache is None:
+        mk_content_cache()
+        return read_cache()
+    return cache
+
+def list_all_images():
+    cache = read_cache()
+    result = []
+    for f, name in folder_list:
+        result += cache[name]
+    return result
+
+def get_batch_of_images(field='public', bsize=batch_size):
+    cache = read_cache()
+    n = bsize if len(cache[field]) > bsize else len(cache[field])
+    return sample(cache[field], n)
+
+def get_sort_image():
+    mk_content_cache()
+    cache = read_cache()
+    if len(cache['unsorted']) >= 1:
+        logger.info('returned one image to sort')
+        return choice(cache['unsorted'])
+    logger.error('could not return any image to sort')
+    return i_default
+
+def find_image_path(image=i_default):
+    cache = read_cache()
+    for folder, name in folder_list:
+        if image in cache[name]:
+            return folder
+    logger.info('image %s not found - returning contentdir: %s' %(image, contentdir))
+    return contentdir
+
+def move_image(request):
+    if 'plus' in request:
+        target = p_public
+        flashmsg = '+'
+    elif 'minus' in request:
+        target = p_reject
+        flashmsg = '-'
+    else:
+        logger.error('request makes no sense: %s' %(request))
+        return
+    source = find_image_path(request['image'])
+    if source != contentdir:
+        try:
+            rename(path.join(source, request['image']), path.join(target, request['image']))
+            flash('%s %s' %(flashmsg, request['image']))
+        except (OSError, Exception) as e:
+            logger.error('could not move: %s -> %s' %(path.join(source, request['image']), path.join(target, request['image'])))
+        else:
+            logger.info('moved: %s -> %s' %(path.join(source, request['image']), path.join(target, request['image'])))
+
 def scrape(url):
-    import urllib2
     try:
-        response = urllib2.urlopen(url)
-        logger.info('scrape: %s' %(url))
-        return response.read()
+        logger.info('scraping: %s' %(url))
+        return urlopen(url).read()
     except Exception as e:
-        return 'error'
         logger.info('scrape error: %s  %s' %(url, e))
+        return 'error'
 
 def json_status():
-    import json
     try:
-        pull = json.loads(scrape('http://status.cccmz.de/raw'))
-        logger.info('json refreshed')
-        return pull
+        return read_json(scrape(statusjsonurl))
     except Exception as e:
         logger.info('could not refresh json: %s' %(e))
-        return 'error'
-
-
-
+    else:
+        logger.info('json refreshed')
+    return 'error'

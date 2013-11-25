@@ -63,51 +63,33 @@ a:visited{
 #main{
     padding: 5px;
     width: auto;
+}
+
+#sort{
     text-align: center;
 }
 
 #sort img, #images img{
     max-width: 95%;
     max-height: 95%;
+}
+
+#sort img{
     margin: 0 auto;
 }
 
+#images {
+        overflow-x: nowrap;
+        white-space: nowrap;
+    }
+
 #images img{
-    display: none;
+    display: inline-block;
+    padding: 0 10px;
+    vertical-align: middle;
 }
 
-.duplicate{
-    overflow: hidden;
-    position: relative;
-    float: left;
-    width: 300px;
-    height: 300px;
-    text-align: left;
-    border: 10px solid rgb(255, 255, 255, 0.9);
-    border-bottom: 45px rgb(255, 255, 255, 0.9);
-    border: 10px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 45px solid rgba(255, 255, 255, 0.9);
-    margin: 5px;
-    color: #000000;
-}
-
-.duplicate .text{
-    position: absolute;
-    bottom: 5px;
-    left: 30px;
-}
-
-.duplicate:hover{
-    color: #ffffff;
-}
-
-.duplicate img{
-    position: relative;
-    width: 600px;
-    left: -50px
-}
-
-#bar, #message, #vote, #text{
+#bar, #message, #vote, .text{
     background: rgb(128,128,128);
     background: rgba(128,128,128,0.8);
     position: fixed;
@@ -139,13 +121,17 @@ a:visited{
     color: #000000;
 }
 
+#bar .heading{
+    text-decoration: underline;
+}
+
 #message{
     left: 10px;
     top: 5%;
 }
 
-#text{
-    left: 10px;
+.text{
+    right: 10px;
     bottom: 5%;
 }
 
@@ -154,7 +140,6 @@ a:visited{
     left: 40%;
     bottom: 5%;
     text-align: center;
-
 }
 
 #vote input{
@@ -167,11 +152,5 @@ a:visited{
     border: 1px solid #000000;
     margin: 5px;
     padding: 5px;
-}
-
-.scroll{
-    text-align: left;
-    -webkit-marquee: auto medium infinite scroll normal;
-    overflow-x: -webkit-marquee;
 }
 

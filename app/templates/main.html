@@ -4,7 +4,7 @@
 {% if images %}
     <div id="images">
     {% for image in images %}
-        <p><a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" /></a></p>
+        <a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" id="img{{ loop.index }}" /></a>
     {% endfor %}
     </div>
 {% endif %}
@@ -12,47 +12,44 @@
 {% if status %}
     <div id="bar">
         <ul>
-            <li><a href="{{ url_for('sort') }}">fnordpad</a></li>
-            {% if status.scroll is defined %}<li class="scroll">{{ status.scroll }}</li>{% endif %}
+            <li class="heading"><a href="{{ url_for('sort') }}">fnordpad</a></li>
+            <br />
             {% if status.datum is defined %}<li>{{ status.datum }}</li>{% endif %}
             {% if status.uhr is defined %}<li>{{ status.uhr }}</li>{% endif %}
+            {% if status.tagline is defined %}<br /><li>{{ status.tagline }}</li>{% endif %}
             {% if status.json is defined %}
             <br />
-                    <br /><li>Network &larr;</li>
                     {% if status.json.leases is defined and status.json.leases.last is defined %}
+                    <br /><li class="heading">Network &larr;</li>
                         <li>dhcp: {{ status.json.leases.last }}</li>
                     {% endif %}
                     {% if status.json.traffic_fmt is defined and status.json.traffic_fmt.last is defined  %}
+                    <br /><li class="heading">Traffic &larr;</li>
                         {% for proto, val in status.json.traffic_fmt.last %}
                         <li>{{ proto }}: {{ val }}</li>
                         {% endfor %}
                     {% endif %}
 
-                    <br /><li>Devices &larr;</li>
                     {% if status.json.devices is defined and status.json.devices.last is defined %}
+                    <br /><li class="heading">Devices &larr;</li>
                         {% for device, stat in status.json.devices.last %}
                             <li title="{{ stat }}">{{ device }}</li>
                         {% endfor %}
                     {% endif %}
 
-                    <br /><li>Energy &larr;</li>
                     {% if status.json.energie is defined and status.json.energie.last is defined %}
+                    <br /><li class="heading">Energy &larr;</li>
                         <li>watt: {{ status.json.energie.last }}</li>
                     {% endif %}
 
             {% endif %}
             <br />
-            {% if status.served is defined %}<li>served: <span id="served">{{ status.served }}</span></li>{% endif %}
-            {% if status.avail is defined %}<li>available: {{ status.avail }}</li>{% endif %}
-            {% if status.new is defined %}
-                <li>unsorted: {% if status.new > 0 %}{{ status.new }}{% else %}none{% endif %}</li>
-            {% endif %}
         </ul>
     </div>
 {% endif %}
 
 {% if sort %}
-    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %}</div>
+    <div class="text">Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %} <a href="{{ url_for('index') }}">index</a></div>
     <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
     <div id="vote">
         <form method="POST" action="{{ url_for('sort') }}" class="vote">
@@ -63,25 +60,8 @@
     </div>
 {% endif %}
 
-{% if duplicates %}
-    {% for duplicate in duplicates %}
-        <div class="duplicate">
-            <img src="{{ url_for('image', filename=duplicate.thumb) }}" alt="{{ duplicate.thumb }}" title="{{ duplicate.hash }}" />
-            <div class="text">
-                <big>{{ duplicate.hash }}</big>
-                <ol>
-                {% for dfile in duplicate.files%}
-                    <li><a href="{{ url_for('zapp', filename=dfile[1]) }}">{{ dfile[0] }} {{ dfile[1] }}</a></li>
-                {% endfor %}
-                </ol>
-                += {{ duplicate.len }}
-            </div>
-        </div>
-    {% endfor %}
-{% endif %}
-
 {% if text %}
-    <div id="text">{{ text|safe }}</div>
+    <div class="text">{{ text|safe }}</div>
 {% endif %}
 
 {% endblock %}

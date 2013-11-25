@@ -12,3 +12,5 @@ unsorted/
 fonts/
 
 *.pyc
+
+cache/

@@ -1,3 +1,56 @@
+var delay = 10000;
+
+function shortcuts()
+{
+    var click_event = document.createEvent('MouseEvent');
+    click_event.initMouseEvent ('click', true, true, window);
+
+    document.onkeydown=function(e)
+    {
+        if(e.which == 80) //p
+        {
+            // Plus
+            document.getElementById('plus').dispatchEvent(click_event);
+        }
+
+        if(e.which == 77) //m
+        {
+            // Minus
+            document.getElementById('minus').dispatchEvent(click_event);
+        }
+
+        if(e.which == 65) //a
+        {
+            // Again
+            window.location.reload();
+            return false;
+        }
+
+        if(e.which == 72) //h
+        {
+            // Home
+            document.location.href = '/index';
+            return false;
+        }
+    }
+}
+
+function shifting()
+{
+    var img_total = document.getElementsByTagName('img').length;
+    document.getElementsByTagName('img')[0].style.marginLeft = window.innerWidth + 'px';
+    document.getElementsByTagName('img')[img_total - 1].style.marginRight = window.innerWidth + 'px';
+    var img_pos = img_total;
+    var step = 1;
+    setInterval(function(){
+        document.getElementById('img' + img_pos).scrollIntoView();
+        img_pos -= step;
+        if(img_pos <= 1 || img_pos >= img_total)
+        {
+            step *= -1;
+        }
+    }, delay / 2);
+}
 
 function start()
 {
@@ -7,13 +60,18 @@ function start()
 
     if(typeof(start_images) != 'undefined' && start_images != null)
     {
-        cycle();
-        justify();
+
+        setTimeout(function()
+        {
+            window.location.reload();
+        }, delay * 20);
+
+        shifting();
+
     }
     if(typeof(start_sort) != 'undefined' && start_sort != null)
     {
-        shortcut();
-        justify();
+        shortcuts();
     }
 
     if(typeof(start_error) != 'undefined' && start_error != null)
