@@ -19,7 +19,6 @@ batch_size = 23
 
 statusjsonurl = 'http://status.cccmz.de/raw'
 
-
 logdir = path.join(basedir, 'logs')
 logfile = path.join(logdir, 'logfile.log')
 

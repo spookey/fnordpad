@@ -43,7 +43,7 @@ def sort(filename=None):
         filename = get_sort_image()
     if not filename in list_all_images():
         filename = i_default
-    flash('~ %s' %(filename))
+    flash('# %s' %(filename))
     logger.info('this %s' %(filename))
     return render_template('main.html',
         title = 'sortpad',

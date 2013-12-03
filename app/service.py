@@ -113,7 +113,7 @@ def scrape(url):
 
 def json_status():
     try:
-        return read_json(scrape(statusjsonurl))
+        return loads(scrape(statusjsonurl))
     except Exception as e:
         logger.info('could not refresh json: %s' %(e))
     else:
