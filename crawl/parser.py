@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import urllib, re, argparse
+import urllib, re, argparse, sys
+from os import path
+sys.path.insert(0, path.join(path.abspath(path.dirname(__file__)), '../'))
 from log import logger
 
 class SoupParser(object):

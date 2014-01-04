@@ -61,6 +61,15 @@ def list_all_images():
         result += cache[name]
     return result
 
+def get_image_stats():
+    cache = read_cache()
+    result = {
+        'public': len(cache['public']),
+        'unsorted': len(cache['unsorted']),
+        'reject': len(cache['reject']),
+    }
+    return result
+
 def get_batch_of_images(field='public', bsize=batch_size):
     cache = read_cache()
     n = bsize if len(cache[field]) > bsize else len(cache[field])

@@ -1,9 +1,9 @@
 # -.- coding: UTF-8 -.-
 
-import sys, os, subprocess
+import sys, subprocess
 from parser import SoupParser
-
-sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), '../'))
+from os import path
+sys.path.insert(0, path.join(path.abspath(path.dirname(__file__)), '../'))
 
 from config import p_unsorted, soupusers, crawl_pages
 from app.service import list_all_images

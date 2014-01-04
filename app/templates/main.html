@@ -13,38 +13,61 @@
     <div id="bar">
         <ul>
             <li class="heading"><a href="{{ url_for('sort') }}">fnordpad</a></li>
-            <br />
+        </ul>
+        <ul>
             {% if status.datum is defined %}<li>{{ status.datum }}</li>{% endif %}
             {% if status.uhr is defined %}<li>{{ status.uhr }}</li>{% endif %}
-            {% if status.tagline is defined %}<br /><li>{{ status.tagline }}</li>{% endif %}
+        </ul>
+
+            {% if status.tagline is defined %}
+            <ul>
+                <li>{{ status.tagline }}</li>
+            </ul>
+            {% endif %}
+
+            {% if status.imagestats is defined %}
+            <ul>
+                <li>Public: {{ status.imagestats['public'] }}</li>
+                <li>Unsorted: {{ status.imagestats['unsorted'] }}</li>
+                <li>Rejected: {{ status.imagestats['reject'] }}</li>
+            </ul>
+            {% endif %}
+
             {% if status.json is defined %}
-            <br />
+
                     {% if status.json.leases is defined and status.json.leases.last is defined %}
-                    <br /><li class="heading">Network &larr;</li>
+                    <ul>
+                        <li class="heading">Network &larr;</li>
                         <li>dhcp: {{ status.json.leases.last }}</li>
+                    </ul>
                     {% endif %}
+
                     {% if status.json.traffic_fmt is defined and status.json.traffic_fmt.last is defined  %}
-                    <br /><li class="heading">Traffic &larr;</li>
+                    <ul>
+                        <li class="heading">Traffic &larr;</li>
                         {% for proto, val in status.json.traffic_fmt.last %}
                         <li>{{ proto }}: {{ val }}</li>
                         {% endfor %}
+                    </ul>
                     {% endif %}
 
                     {% if status.json.devices is defined and status.json.devices.last is defined %}
-                    <br /><li class="heading">Devices &larr;</li>
+                    <ul>
+                        <li class="heading">Devices &larr;</li>
                         {% for device, stat in status.json.devices.last %}
                             <li title="{{ stat }}">{{ device }}</li>
                         {% endfor %}
+                    </ul>
                     {% endif %}
 
                     {% if status.json.energie is defined and status.json.energie.last is defined %}
-                    <br /><li class="heading">Energy &larr;</li>
+                    <ul>
+                        <li class="heading">Energy &larr;</li>
                         <li>watt: {{ status.json.energie.last }}</li>
+                    </ul>
                     {% endif %}
 
             {% endif %}
-            <br />
-        </ul>
     </div>
 {% endif %}
 
