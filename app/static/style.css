@@ -60,6 +60,10 @@ a:visited{
     color: #6c71c4;
 }
 
+ul{
+    margin: 0 0 1.5em;
+}
+
 #main{
     padding: 5px;
     width: auto;

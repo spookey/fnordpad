@@ -25,47 +25,48 @@
             </ul>
             {% endif %}
 
+            {% if status.json is defined %}
+
+                    {% if status.json.leases is defined %}
+                    <ul>
+                        <li class="heading">Network &larr;</li>
+                        <li>dhcp: {{ status.json.leases }}</li>
+                    </ul>
+                    {% endif %}
+
+                    {% if status.json.traffic_v4_in is defined and status.json.traffic_v4_out is defined and status.json.traffic_v6_in is defined and status.json.traffic_v6_out is defined %}
+                    <ul>
+                        <li class="heading">Traffic &larr;</li>
+                        <li>v4 in: {{ status.json.traffic_v4_in }}</li>
+                        <li>v4 out: {{ status.json.traffic_v4_out }}</li>
+                        <li>v6 in: {{ status.json.traffic_v6_in }}</li>
+                        <li>v6 out: {{ status.json.traffic_v6_out }}</li>
+                    </ul>
+                    {% endif %}
+
+                    {% if status.json.airport is defined and status.json.chumby is defined %}
+                    <ul>
+                        <li class="heading">Devices &larr;</li>
+                        <li title="{{ status.json.airport }}">Airport: {{ status.json.airport }}</li>
+                        <li title="{{ status.json.chumby }}">Chumby: {{ status.json.chumby }}</li>
+                    </ul>
+                    {% endif %}
+
+                    {% if status.json.energie is defined %}
+                    <ul>
+                        <li class="heading">Energy &larr;</li>
+                        <li>watt: {{ status.json.energie }}</li>
+                    </ul>
+                    {% endif %}
+
             {% if status.imagestats is defined %}
             <ul>
+                <li class="heading">Images &larr;</li>
                 <li>Public: {{ status.imagestats['public'] }}</li>
                 <li>Unsorted: {{ status.imagestats['unsorted'] }}</li>
                 <li>Rejected: {{ status.imagestats['reject'] }}</li>
             </ul>
             {% endif %}
-
-            {% if status.json is defined %}
-
-                    {% if status.json.leases is defined and status.json.leases.last is defined %}
-                    <ul>
-                        <li class="heading">Network &larr;</li>
-                        <li>dhcp: {{ status.json.leases.last }}</li>
-                    </ul>
-                    {% endif %}
-
-                    {% if status.json.traffic_fmt is defined and status.json.traffic_fmt.last is defined  %}
-                    <ul>
-                        <li class="heading">Traffic &larr;</li>
-                        {% for proto, val in status.json.traffic_fmt.last %}
-                        <li>{{ proto }}: {{ val }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-
-                    {% if status.json.devices is defined and status.json.devices.last is defined %}
-                    <ul>
-                        <li class="heading">Devices &larr;</li>
-                        {% for device, stat in status.json.devices.last %}
-                            <li title="{{ stat }}">{{ device }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-
-                    {% if status.json.energie is defined and status.json.energie.last is defined %}
-                    <ul>
-                        <li class="heading">Energy &larr;</li>
-                        <li>watt: {{ status.json.energie.last }}</li>
-                    </ul>
-                    {% endif %}
 
             {% endif %}
     </div>

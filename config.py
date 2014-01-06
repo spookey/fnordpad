@@ -17,7 +17,7 @@ folder_list = zip([p_unsorted, p_public, p_reject], ['unsorted', 'public', 'reje
 
 batch_size = 23
 
-statusjsonurl = 'http://status.cccmz.de/raw'
+statusjsonurl = 'http://status.cccmz.de/api/0.1/get/'
 
 logdir = path.join(basedir, 'logs')
 logfile = path.join(logdir, 'logfile.log')
@@ -26,7 +26,7 @@ logfile = path.join(logdir, 'logfile.log')
 #>>> os.urandom(24)
 SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 
-USE_X_SENDFILE = True
+# USE_X_SENDFILE = True
 
 # Crawler
 soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'lambda', 'againstreality', 'kv0', 'maesto', 'i8br', 'amenthes', 'murmeltier', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'rocco-the-spoon', 'saper', 'tokei', 'lsanoj', 'markusbec', 'sapling']
