@@ -35,6 +35,35 @@ function shortcuts()
     }
 }
 
+function setclock()
+{
+    var clock = document.getElementById('clock');
+    var interval = setInterval(function ()
+    {
+        var time = new Date();
+        var hours = time.getHours();
+        var minutes = time.getMinutes();
+        var seconds = time.getSeconds();
+        if (hours < 10)
+        {
+            hours = '0' + hours;
+        }
+        if (minutes < 10)
+        {
+            minutes = '0' + minutes;
+        }
+        if (seconds < 10)
+        {
+            seconds = '0' + seconds;
+        }
+        if(typeof(clock) != 'undefined' && clock != null)
+        {
+            clock.innerHTML = hours + ':' + minutes + ':' + seconds;
+        }
+    }, 100);
+
+}
+
 function shifting()
 {
     var img_total = document.getElementsByTagName('img').length;
@@ -57,6 +86,7 @@ function start()
     var start_images = document.getElementById('images');
     var start_sort = document.getElementById('sort');
     var start_error = document.getElementById('error');
+    var clock = document.getElementById('clock');
 
     if(typeof(start_images) != 'undefined' && start_images != null)
     {
@@ -81,6 +111,12 @@ function start()
             window.location.href = '/';
         }, 5000);
     }
+
+    if(typeof(clock) != 'undefined' && clock != null)
+    {
+        setclock();
+    }
+
 }
 
 window.onload = start;
