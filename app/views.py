@@ -20,7 +20,7 @@ def index():
         'tagline': tagline.next(),
         'uhr': uhr(),
         'datum': datum(),
-        'json': app.json if isinstance(app.json, dict) else None,
+        'json': app.json,
         'imagestats': get_image_stats()
         }
     logger.info('/index requested')

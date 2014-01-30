@@ -25,7 +25,7 @@
             </ul>
             {% endif %}
 
-            {% if status.json is defined %}
+            {% if status.json is defined and status.json != None %}
 
                     {% if status.json.leases.value is defined %}
                     <ul>
