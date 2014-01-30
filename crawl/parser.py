@@ -8,7 +8,7 @@ from log import logger
 class SoupParser(object):
 
     # Vielen Dank an Frank für diese Awesome Regex!
-    __rx = r'(url|src)="(http://.\.asset\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'
+    __rx = r'(url|src)="(http://asset-.\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'
     __sx = r'SOUP.Endless.next_url.*/(since/\d*)'
 
     def __init__(self, soupuser, pages):

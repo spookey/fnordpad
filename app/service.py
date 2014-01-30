@@ -120,9 +120,9 @@ def scrape(url):
         logger.info('scrape error: %s  %s' %(url, e))
         return 'error'
 
-def json_status(sensor):
+def json_status():
     try:
-        return loads(scrape(statusjsonurl + sensor + '/last/'))[-1]
+        return loads(scrape(statusjsonurl))
     except Exception as e:
         logger.info('could not refresh json: %s' %(e))
     else:

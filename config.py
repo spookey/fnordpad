@@ -17,7 +17,7 @@ folder_list = zip([p_unsorted, p_public, p_reject], ['unsorted', 'public', 'reje
 
 batch_size = 23
 
-statusjsonurl = 'http://status.cccmz.de/api/0.1/get/'
+statusjsonurl = 'http://status.cccmz.de/api/0.2/get/all/last/'
 
 logdir = path.join(basedir, 'logs')
 logfile = path.join(logdir, 'logfile.log')

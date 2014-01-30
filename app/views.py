@@ -14,16 +14,7 @@ tagline = cycle(taglines)
 def index():
     if timestamp_now()/60 - 20 >= app.last_scrape/60:
         mk_content_cache()
-        app.json = {
-            'leases': json_status('leases'),
-            'traffic_v4_in': json_status('traffic-v4_in'),
-            'traffic_v4_out': json_status('traffic-v4_out'),
-            'traffic_v6_in': json_status('traffic-v6_in'),
-            'traffic_v6_out': json_status('traffic-v6_out'),
-            'energie': json_status('energie'),
-            'airport': json_status('airport'),
-            'chumby': json_status('chumby')
-        }
+        app.json = json_status()
         app.last_scrape = timestamp_now()
     status = {
         'tagline': tagline.next(),

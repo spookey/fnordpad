@@ -27,35 +27,35 @@
 
             {% if status.json is defined %}
 
-                    {% if status.json.leases is defined %}
+                    {% if status.json.leases.value is defined %}
                     <ul>
                         <li class="heading">Network &larr;</li>
-                        <li>dhcp: {{ status.json.leases }} Leases</li>
+                        <li>dhcp: {{ status.json.leases.value }} Leases</li>
                     </ul>
                     {% endif %}
 
-                    {% if status.json.traffic_v4_in is defined and status.json.traffic_v4_out is defined and status.json.traffic_v6_in is defined and status.json.traffic_v6_out is defined %}
+                    {% if status.json['traffic-v4_in'].value is defined and status.json['traffic-v4_out'].value is defined and status.json['traffic-v6_in'].value is defined and status.json['traffic-v6_out'].value is defined %}
                     <ul>
                         <li class="heading">Traffic &larr;</li>
-                        <li>v4 in: {{ status.json.traffic_v4_in|filesizeformat }}</li>
-                        <li>v4 out: {{ status.json.traffic_v4_out|filesizeformat }}</li>
-                        <li>v6 in: {{ status.json.traffic_v6_in|filesizeformat }}</li>
-                        <li>v6 out: {{ status.json.traffic_v6_out|filesizeformat }}</li>
+                        <li>v4 in: {{ status.json['traffic-v4_in'].value|filesizeformat }}</li>
+                        <li>v4 out: {{ status.json['traffic-v4_out'].value|filesizeformat }}</li>
+                        <li>v6 in: {{ status.json['traffic-v6_in'].value|filesizeformat }}</li>
+                        <li>v6 out: {{ status.json['traffic-v6_out'].value|filesizeformat }}</li>
                     </ul>
                     {% endif %}
 
-                    {% if status.json.airport is defined and status.json.chumby is defined %}
+                    {% if status.json.airport.value is defined and status.json.chumby.value is defined %}
                     <ul>
                         <li class="heading">Devices &larr;</li>
-                        <li title="{{ status.json.airport }}">Airport: {{ 'online' if status.json.airport == 1 else 'offline' }}</li>
-                        <li title="{{ status.json.chumby }}">Chumby: {{ 'online' if status.json.chumby == 1 else 'offline' }}</li>
+                        <li title="{{ status.json.airport }}">Airport: {{ 'online' if status.json.airport.value == 1 else 'offline' }}</li>
+                        <li title="{{ status.json.chumby }}">Chumby: {{ 'online' if status.json.chumby.value == 1 else 'offline' }}</li>
                     </ul>
                     {% endif %}
 
-                    {% if status.json.energie is defined %}
+                    {% if status.json.energie.value is defined %}
                     <ul>
                         <li class="heading">Energy &larr;</li>
-                        <li>Watt: {{ status.json.energie }}</li>
+                        <li>Watt: {{ status.json.energie.value }}</li>
                     </ul>
                     {% endif %}
 
