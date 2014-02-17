@@ -3,6 +3,7 @@
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
 from app import app, logger
 from .service import list_images, list_all_images, find_image_path, mk_content_cache, read_cache, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, get_image_stats
+from .suppenkasper import kasper
 from config import p_unsorted, p_public, p_reject, staticdir, i_default, taglines
 from itertools import cycle
 
@@ -28,7 +29,7 @@ def index():
         title = 'fnordpad',
         images = get_batch_of_images(),
         status = status,
-        )
+    )
 
 @app.route('/sort/', methods=['GET', 'POST'])
 @app.route('/sort/<filename>', methods=['GET', 'POST'])
@@ -46,7 +47,7 @@ def sort(filename=None):
         title = 'sortpad',
         sort = filename,
         len_left = len(read_cache()['unsorted']),
-        )
+    )
 
 @app.route('/image/')
 @app.route('/image/<filename>')
@@ -55,6 +56,16 @@ def image(filename=None):
         logger.error('requested image not found: %s fallback to %s' %(filename, i_default))
         filename = i_default
     return send_from_directory(find_image_path(filename), filename)
+
+@app.route('/crawl/<action>')
+def crawl(action=False):
+    if action is not False:
+        toload = kasper(view=action)
+        return render_template('main.html',
+            title = 'crawlpad',
+            text = toload,
+        )
+    return redirect(url_for('index'))
 
 @app.route('/favicon.ico')
 def favicon():
@@ -70,7 +81,7 @@ def internal_error(error):
     return render_template('404.html',
         title = '404',
         error = True,
-        ), 404
+    ), 404
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -80,4 +91,4 @@ def internal_error(error):
     return render_template('500.html',
         title = '500',
         error = True,
-        ), 500
+    ), 500
