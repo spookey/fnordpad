@@ -4,7 +4,7 @@ from os import path, listdir, rename
 from json import dumps, loads
 from time import time, strftime
 from random import sample, choice
-from urllib2 import urlopen
+from requests import get as rget
 from flask import flash
 from config import c_file, folder_list, i_default, contentdir, batch_size, p_public, p_reject, statusjsonurl
 from log import logger
@@ -115,7 +115,7 @@ def move_image(request):
 def scrape(url):
     try:
         logger.info('scraping: %s' %(url))
-        return urlopen(url).read()
+        return rget(url).text
     except Exception as e:
         logger.info('scrape error: %s  %s' %(url, e))
         return 'error'

@@ -3,7 +3,7 @@ soup.io crawler für das Fnordpad im CCC Mainz/Wiesbaden.
 :smile_cat: :smiley_cat: :kissing_cat: :heart_eyes_cat:
 
 
-:boom:
+:boom: now in Python3
 
     /*
     * ----

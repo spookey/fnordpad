@@ -13,7 +13,7 @@ i_default = 'fnord.jpeg'
 p_unsorted = path.join(contentdir, 'unsorted')
 p_public = path.join(contentdir, 'public')
 p_reject = path.join(contentdir, 'reject')
-folder_list = zip([p_unsorted, p_public, p_reject], ['unsorted', 'public', 'reject'])
+folder_list = list(zip([p_unsorted, p_public, p_reject], ['unsorted', 'public', 'reject']))
 
 batch_size = 23
 
