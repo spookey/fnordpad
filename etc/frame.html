@@ -6,11 +6,11 @@
     <style type="text/css">
         @font-face {
         font-family: 'SourceCodeProRegular';
-        src: url('http://localhost/static/fonts/SourceCodePro-Regular-webfont.eot');
-        src: url('http://localhost/static/fonts/SourceCodePro-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-             url('http://localhost/static/fonts/SourceCodePro-Regular-webfont.woff') format('woff'),
-             url('http://localhost/static/fonts/SourceCodePro-Regular-webfont.ttf') format('truetype'),
-             url('http://localhost/static/fonts/SourceCodePro-Regular-webfont.svg#SourceCodeProRegular') format('svg');
+        src: url('http://localhost:80/static/fonts/SourceCodePro-Regular-webfont.eot');
+        src: url('http://localhost:80/static/fonts/SourceCodePro-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+             url('http://localhost:80/static/fonts/SourceCodePro-Regular-webfont.woff') format('woff'),
+             url('http://localhost:80/static/fonts/SourceCodePro-Regular-webfont.ttf') format('truetype'),
+             url('http://localhost:80/static/fonts/SourceCodePro-Regular-webfont.svg#SourceCodeProRegular') format('svg');
         font-weight: normal;
         font-style: normal;
         }
@@ -21,33 +21,26 @@
             font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
             font-size: 12px;
         }
+        .bigger{
+            font-size: 1.2em;
+        }
         * {
             margin: 0;
             padding: 0;
         }
-        iframe {
+        iframe[name=fnordpad] {
             border: 0;
-            position:absolute;
+            position: absolute;
             width: 100%;
             height: 100%;
-        }
-        img {
-            position: absolute;
-            background: rgb(128,128,128);
-            background: rgba(128,128,128,0.8);
-            left: 10px;
-            bottom: 5%;
-            width: 40%;
-            padding: 5px;
-            border-radius: 5px;
         }
         #flash {
             position: absolute;
             background: rgb(128,128,128);
             background: rgba(128,128,128,0.8);
             font-size: 1.2em;
-            left: 10px;
-            bottom: 5%;
+            left: 1%;
+            bottom: 2%;
             padding: 10px 5px;
             border-radius: 5px;
         }
@@ -59,13 +52,12 @@
 </head>
 <body>
 
-<iframe src="http://localhost/" name="fnordpad">
+<iframe src="http://localhost:80/" name="fnordpad">
   <p>kaputt</p>
 </iframe>
-<!-- <img "src="http://status.cccmz.de/static/data/public/traffic-week.png" /> -->
 <div id="flash">
     <p>Ein Projekt des</p>
-    <p><big>Chaos Computer Club</big></p>
+    <p class="bigger">Chaos Computer Club</p>
     <p>Mainz/Wiesbaden</p>
 </div>
 
