@@ -1,4 +1,4 @@
-var delay = 10000;
+var delay = 15000;
 
 function shortcuts()
 {
@@ -67,8 +67,8 @@ function setclock()
 function shifting()
 {
     var img_total = document.getElementsByTagName('img').length;
-    document.getElementsByTagName('img')[0].style.marginLeft = window.innerWidth + 'px';
-    document.getElementsByTagName('img')[img_total - 1].style.marginRight = window.innerWidth + 'px';
+    document.getElementsByTagName('img')[0].style.marginLeft = (window.innerWidth + 'px')/2;
+    document.getElementsByTagName('img')[img_total - 1].style.marginRight = (window.innerWidth + 'px')/2;
     var img_pos = img_total;
     var step = 1;
     setInterval(function(){
@@ -87,6 +87,7 @@ function start()
     var start_sort = document.getElementById('sort');
     var start_error = document.getElementById('error');
     var clock = document.getElementById('clock');
+    var shout = document.getElementById('shout');
 
     if(typeof(start_images) != 'undefined' && start_images != null)
     {
@@ -94,7 +95,7 @@ function start()
         setTimeout(function()
         {
             window.location.reload();
-        }, delay * 20);
+        }, delay * 25);
 
         shifting();
 
@@ -117,6 +118,23 @@ function start()
         setclock();
     }
 
+    if(typeof(shout) != 'undefined' && shout != null)
+    {
+
+        var source = new EventSource('/shout/stream/');
+        source.onmessage = function(event)
+        {
+            shout.innerHTML = event.data;
+            shout.style.display = 'block';
+
+            var timeout = setTimeout(function()
+            {
+                shout.style.display = 'none';
+            }, delay);
+
+        };
+
+    }
 }
 
 window.onload = start;

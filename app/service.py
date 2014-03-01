@@ -1,31 +1,16 @@
 # -.- coding: UTF-8 -.-
 
 from os import path, listdir, rename
-from json import dumps, loads
+from json import loads
 from time import time, strftime
 from random import sample, choice
+from redis import Redis
 from requests import get as rget
 from flask import flash
-from config import c_file, folder_list, i_default, contentdir, batch_size, p_public, p_reject, statusjsonurl
+from config import REDIS_host, REDIS_port, REDIS_dbnr, image_folders, i_default, contentdir, batch_size, p_public, p_reject, shout_channel, statusjsonurl
 from log import logger
 
-def write_json(filename, data):
-    with open(filename, 'w') as f:
-        try:
-            f.write(dumps(data, indent=2))
-        except Exception:
-            pass
-
-def read_json(filename):
-    if path.exists(filename):
-        with open(filename, 'r') as f:
-            try:
-                return loads(f.read())
-            except Exception:
-                pass
-
-def uhr():
-    return strftime('%H:%M')
+redisDB = Redis(host=REDIS_host, port=REDIS_port, db=REDIS_dbnr, decode_responses=True)
 
 def datum():
     return strftime('%d. %b %Y')
@@ -33,84 +18,102 @@ def datum():
 def timestamp_now():
     return int(time())
 
+#
+
+def shout_stream():
+    pubsub = redisDB.pubsub()
+    pubsub.subscribe(shout_channel)
+    for event in pubsub.listen():
+        logger.info('new pubsub event: %s' %(event))
+        if event['type'] == 'message':
+            strdata = 'data: %s\r\n\r\n' %(event['data'])
+            yield strdata.encode('UTF-8')
+
+def shout_out(message):
+    redisDB.publish(shout_channel, message)
+
+#
+
+def mk_image_cache():
+    for name in image_folders:
+        redisDB.delete(name)
+        for img in list_images(image_folders[name]):
+            redisDB.rpush(name, img)
+    logger.info('Image cache generated')
+
+def read_image_cache():
+    result = dict()
+    for name in image_folders:
+        result[name] = redisDB.lrange(name, 0, -1)
+    return result
+
 def list_images(folder):
     if path.exists(folder):
         for filename in listdir(folder):
             if any(filename.endswith(x) for x in ('jpeg', 'jpg', 'png', 'gif')):
-                if(path.getsize(path.join(folder, filename)) > 0):
+                if path.getsize(path.join(folder, filename)) > 0:
                     yield filename
 
-def mk_content_cache():
-    cache = {'timestamp': timestamp_now()}
-    for folder, name in folder_list:
-        listing = list_images(folder)
-        cache[name] = [p for p in listing]
-    write_json(c_file, cache)
-
-def read_cache():
-    cache = read_json(c_file)
-    if cache is None:
-        mk_content_cache()
-        return read_cache()
-    return cache
-
 def list_all_images():
-    cache = read_cache()
-    result = []
-    for f, name in folder_list:
-        result += cache[name]
+    cache = read_image_cache()
+    result = list()
+    for elems in cache:
+        result += cache[elems]
     return result
 
 def get_image_stats():
-    cache = read_cache()
-    result = {
-        'public': len(cache['public']),
-        'unsorted': len(cache['unsorted']),
-        'reject': len(cache['reject']),
-    }
+    result = dict()
+    for name in image_folders:
+        result[name] = redisDB.llen(name)
     return result
 
 def get_batch_of_images(field='public', bsize=batch_size):
-    cache = read_cache()
+    cache = read_image_cache()
     n = bsize if len(cache[field]) > bsize else len(cache[field])
     return sample(cache[field], n)
 
 def get_sort_image():
-    mk_content_cache()
-    cache = read_cache()
-    if len(cache['unsorted']) >= 1:
+    cache = read_image_cache()
+    imgleft = len(cache['unsorted'])
+    if imgleft >= 1:
         logger.info('returned one image to sort')
-        return choice(cache['unsorted'])
-    logger.error('could not return any image to sort')
-    return i_default
+        return choice(cache['unsorted']), imgleft
+    logger.warn('no images left for sorting')
+    return i_default, imgleft
 
-def find_image_path(image=i_default):
-    cache = read_cache()
-    for folder, name in folder_list:
-        if image in cache[name]:
-            return folder
+def find_image_path(image, fullpath=True):
+    cache = read_image_cache()
+    for line in cache:
+        if image in cache[line]:
+            return image_folders[line] if fullpath else line
     logger.info('image %s not found - returning contentdir: %s' %(image, contentdir))
-    return contentdir
+    return contentdir if fullpath else None
 
-def move_image(request):
-    if 'plus' in request:
-        target = p_public
-        flashmsg = '+'
-    elif 'minus' in request:
-        target = p_reject
-        flashmsg = '-'
+def move_image(requestform):
+    if 'plus' in requestform:
+        targettag = 'public'
+        flashstate = '+'
+    elif 'minus' in requestform:
+        targettag = 'reject'
+        flashstate = '-'
     else:
-        logger.error('request makes no sense: %s' %(request))
+        logger.error('request makes no sense: %s' %(requestform))
         return
-    source = find_image_path(request['image'])
+    source = find_image_path(requestform['image'])
     if source != contentdir:
+        sourcetag = find_image_path(requestform['image'], fullpath=False)
+        target = image_folders[targettag]
         try:
-            rename(path.join(source, request['image']), path.join(target, request['image']))
-            flash('%s %s' %(flashmsg, request['image']))
+            rename(path.join(source, requestform['image']), path.join(target, requestform['image']))
+            redisDB.rpush(targettag, requestform['image'])
+            redisDB.lrem(sourcetag, requestform['image'])
+            flash('%s %s' %(flashstate, requestform['image']))
         except (OSError, Exception) as e:
-            logger.error('could not move: %s -> %s' %(path.join(source, request['image']), path.join(target, request['image'])))
+            logger.error('could not move: %s -> %s' %(path.join(source, requestform['image']), path.join(target, requestform['image'])))
         else:
-            logger.info('moved: %s -> %s' %(path.join(source, request['image']), path.join(target, request['image'])))
+            logger.info('moved: %s -> %s' %(path.join(source, requestform['image']), path.join(target, requestform['image'])))
+
+#
 
 def scrape(url):
     try:

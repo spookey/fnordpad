@@ -93,7 +93,7 @@ ul{
     vertical-align: middle;
 }
 
-#bar, #message, #vote, .text{
+#bar, #message, #vote, #shout, .text{
     background: rgb(128,128,128);
     background: rgba(128,128,128,0.8);
     position: fixed;
@@ -103,9 +103,9 @@ ul{
 }
 
 #bar{
-    right: 10px;
-    top: 5%;
-    bottom: 5%;
+    right: 1%;
+    top: 2%;
+    bottom: 2%;
     max-width: 125px;
     overflow: hidden;
 }
@@ -126,23 +126,35 @@ ul{
 }
 
 #bar .heading{
+    font-size: 1.25em;
     text-decoration: underline;
 }
 
 #message{
-    left: 10px;
-    top: 5%;
+    left: 1%;
+    top: 2%;
 }
 
 .text{
-    right: 10px;
-    bottom: 5%;
+    right: 1%;
+    bottom: 2%;
+}
+
+#shout{
+    display: none;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 50%;
+    bottom: 2%;
+    text-align: center;
+    font-size: 2.5em;
 }
 
 #vote{
-    width: 20%;
-    left: 40%;
-    bottom: 5%;
+    width: 125px;
+    right: 1%;
+    top: 2%;
     text-align: center;
 }
 
@@ -151,7 +163,7 @@ ul{
     font-size: 1.5em;
     color: #000000;
     background: #ffffff;
-    width: 40%;
+    width: 115px;
     border-radius: 5px;
     border: 1px solid #000000;
     margin: 5px;
