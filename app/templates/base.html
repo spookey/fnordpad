@@ -5,7 +5,7 @@
     {% if title %}<title>&bull; {{ title }} &bull;</title>{% else %}<title>&bull; &mdash; &bull;</title>{% endif %}
     <link href="{{ url_for('favicon') }}" rel="shortcut icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" media="screen">
-    {% if images or sort or error %}
+    {% if image or sort or error %}
     <script src="{{ url_for('static', filename='start.js') }}"></script>
     {% endif %}
 

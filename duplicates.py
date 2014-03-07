@@ -4,7 +4,6 @@ from sys import argv
 from os import path, listdir, remove
 from hashlib import sha1
 
-
 def chunk_reader(fileobject, chunk_size=1024):
     while True:
         chunk = fileobject.read(chunk_size)

@@ -65,40 +65,32 @@ ul{
 }
 
 #main{
-    padding: 5px;
-    width: auto;
+    padding: .5em;
 }
 
-#sort{
+#sort, #image{
     text-align: center;
 }
 
-#sort img, #images img{
+#cacheimage{
+    display: none;
+}
+
+#sort img, #image img{
+    margin: auto;
+    position: fixed;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
     max-width: 95%;
     max-height: 95%;
-}
-
-#sort img{
-    margin: 0 auto;
-}
-
-#images {
-        overflow-x: nowrap;
-        white-space: nowrap;
-    }
-
-#images img{
-    display: inline-block;
-    padding: 0 50px;
-    vertical-align: middle;
 }
 
 #bar, #message, #vote, #shout, .text{
     background: rgb(128,128,128);
     background: rgba(128,128,128,0.8);
     position: fixed;
-    padding: 10px 5px;
-    border-radius: 5px;
+    padding: 1em .5em;
+    border-radius: .5em;
     text-align: left;
 }
 
@@ -106,7 +98,7 @@ ul{
     right: 1%;
     top: 2%;
     bottom: 2%;
-    max-width: 125px;
+    max-width: 12em;
     overflow: hidden;
 }
 
@@ -116,7 +108,7 @@ ul{
 }
 
 #bar li{
-    padding: 3px 0;
+    padding: .3em 0;
     list-style: none;
     text-align: right;
 }
@@ -152,7 +144,7 @@ ul{
 }
 
 #vote{
-    width: 125px;
+    width: 12em;
     right: 1%;
     top: 2%;
     text-align: center;
@@ -163,10 +155,10 @@ ul{
     font-size: 1.5em;
     color: #000000;
     background: #ffffff;
-    width: 115px;
-    border-radius: 5px;
-    border: 1px solid #000000;
-    margin: 5px;
-    padding: 5px;
+    /*width: 12em;*/
+    width: 90%;
+    border-radius: .5em;
+    border: .1em solid #000000;
+    margin: .5em 0;
+    padding: .5em;
 }
-

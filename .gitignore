@@ -13,4 +13,4 @@ fonts/
 
 *.pyc
 
-cache/
+*.rdb

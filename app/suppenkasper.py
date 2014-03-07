@@ -1,11 +1,10 @@
 # -.- coding: utf-8 -.-
 
-from config import p_unsorted, soupusers, crawl_pages
+from config import image_folders, soupusers, crawl_pages
 from .service import list_all_images
 from log import logger
 import re
 from os import path
-from multiprocessing import Pool
 from requests import get as rget
 
 class SoupParser(object):
@@ -54,7 +53,7 @@ def dload(urllist):
         filename = url.split('/')[-1]
         r = rget(url, stream=True)
         if r.status_code == 200:
-            with open(path.join(p_unsorted, filename), 'wb') as f:
+            with open(path.join(image_folders['unsorted'], filename), 'wb') as f:
                 for chunk in r.iter_content(1024):
                     f.write(chunk)
             logger.info('.done: %s' %(filename))

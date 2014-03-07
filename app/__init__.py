@@ -4,10 +4,12 @@ from flask import Flask
 app = Flask(__name__)
 app.config.from_object('config')
 
-if app.debug is not True:
+if app.debug is False:
     from log import filehandler
     app.logger.addHandler(filehandler)
     logger = app.logger
+
+
 
 logger.info('fnordpad started')
 logger.info('-' * 16)

@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if images %}
-    <div id="images">
-    {% for image in images %}
-        <a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" id="img{{ loop.index }}" /></a>
-    {% endfor %}
+{% if image %}
+    <div id="image">
+        <img src="{{ url_for('image', filename=image) }}" alt="image" id="currentimage" />
+        <img src="{{ url_for('image', filename='fnord.jpeg') }}" alt="cache" id="cacheimage" />
     </div>
 {% endif %}
 
@@ -15,7 +14,7 @@
             <li class="heading"><a href="{{ url_for('sort') }}">fnordpad</a></li>
         </ul>
         <ul>
-            {% if status.datum is defined %}<li>{{ status.datum }}</li>{% endif %}
+            <li id="date">&nbsp;</li>
             <li id="clock">&nbsp;</li>
         </ul>
 
@@ -81,8 +80,6 @@
 {% endif %}
 
 {% if sort %}
-    <div class="text">Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %} <a href="{{ url_for('index') }}">index</a></div>
-    <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
     <div id="vote">
         <form method="POST" action="{{ url_for('sort') }}" class="vote">
             <input id="imagename" name="image" type="hidden" value="{{ sort }}">
@@ -90,6 +87,8 @@
                 <input id="minus" name="minus" type="submit" value="-">
         </form>
     </div>
+    <div class="text">Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %} <a href="{{ url_for('index') }}">index</a></div>
+    <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
 {% endif %}
 
 {% if text %}
