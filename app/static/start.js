@@ -87,15 +87,20 @@ function imagecycle(image)
     var imagesource = new EventSource('/index/stream');
     var xmlhttp = new XMLHttpRequest();
     var cacheimage = document.getElementById('cacheimage');
-    var cache = 'fnord.jpeg';
+    var cache = '/image/fnord.jpeg';
 
     imagesource.onmessage = function(event)
     {
-        image.src = cache;
-        cache = "/image/" + event.data;
         if(typeof(cacheimage) != 'undefined' && cacheimage !== null)
         {
-            cacheimage.src = cache;
+            image.src = cache;
+            cacheimage.src = "/image/" + event.data;
+            // console.log("current: " + cache);
+            // console.log("cache: /image/" + event.data);
+            cache = "/image/" + event.data;
+        } else
+        {
+            image.src = "/image" + event.data;
         }
     };
 
