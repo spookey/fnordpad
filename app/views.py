@@ -74,9 +74,11 @@ def crawl(action=False):
 @app.route('/shout/<text>')
 def shout(text=None):
     if request.method == 'POST':
+        txt = ''
         for s in request.form.keys():
             shout_to_redis(shout_channel, s)
-        return s
+            txt += s
+        return txt
     if text is not None:
         if text == 'stream':
             return Response(

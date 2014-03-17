@@ -72,10 +72,6 @@ ul{
     text-align: center;
 }
 
-#cacheimage{
-    display: none;
-}
-
 #sort img, #image img{
     margin: auto;
     position: fixed;

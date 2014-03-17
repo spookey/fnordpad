@@ -3,8 +3,7 @@
 
 {% if image %}
     <div id="image">
-        <img src="{{ url_for('image', filename=image) }}" alt="image" id="currentimage" />
-        <img src="{{ url_for('image', filename='fnord.jpeg') }}" alt="cache" id="cacheimage" />
+        <img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" id="currentimage" />
     </div>
 {% endif %}
 
