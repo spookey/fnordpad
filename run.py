@@ -1,6 +1,6 @@
 # -.- coding: UTF-8 -.-
 
-'''Run this Site for developement. Connect to localhost:5000'''
+'''run fnordpad at localhost:5000'''
 
 from app import app
 

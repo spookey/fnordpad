@@ -9,9 +9,12 @@ if app.debug is False:
     app.logger.addHandler(filehandler)
     logger = app.logger
 
-
-
 logger.info('fnordpad started')
-logger.info('-' * 16)
+logger.info('=' * 16)
+
+from redis import Redis
+from config import REDIS_host, REDIS_port, REDIS_dbnr
+app.redisDB = Redis(host=REDIS_host, port=REDIS_port, db=REDIS_dbnr, decode_responses=True)
+
 
 from app import views

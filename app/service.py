@@ -4,13 +4,11 @@ from os import path, listdir, rename
 from json import loads
 from time import time
 from random import choice
-from redis import Redis
 from requests import get as rget
 from flask import flash
-from config import REDIS_host, REDIS_port, REDIS_dbnr, image_folders, i_default, contentdir
+from config import image_folders, i_default, contentdir, image_channel
+from app import app
 from log import logger
-
-redisDB = Redis(host=REDIS_host, port=REDIS_port, db=REDIS_dbnr, decode_responses=True)
 
 def timestamp_now():
     return int(time())
@@ -18,7 +16,7 @@ def timestamp_now():
 #
 
 def shout_to_browser(channel):
-    pubsub = redisDB.pubsub()
+    pubsub = app.redisDB.pubsub()
     pubsub.subscribe(channel)
     for event in pubsub.listen():
         logger.info('new pubsub event: %s' %(event))
@@ -27,21 +25,25 @@ def shout_to_browser(channel):
             yield strdata.encode('UTF-8')
 
 def shout_to_redis(channel, message):
-    redisDB.publish(channel, message)
+    app.redisDB.publish(channel, message)
+    return message
 
 #
 
+def next_image():
+    return shout_to_redis(image_channel, get_image())
+
 def mk_image_cache():
     for name in image_folders:
-        redisDB.delete(name)
+        app.redisDB.delete(name)
         for img in list_images(image_folders[name]):
-            redisDB.rpush(name, img)
+            app.redisDB.rpush(name, img)
     logger.info('Image cache generated')
 
 def read_image_cache():
     result = dict()
     for name in image_folders:
-        result[name] = redisDB.lrange(name, 0, -1)
+        result[name] = app.redisDB.lrange(name, 0, -1)
     return result
 
 def list_images(folder):
@@ -61,12 +63,12 @@ def list_all_images():
 def get_image_stats():
     result = dict()
     for name in image_folders:
-        result[name] = redisDB.llen(name)
+        result[name] = app.redisDB.llen(name)
     return result
 
 def get_image(field='public'):
     cache = read_image_cache()
-    return choice(cache[field]) if redisDB.llen(field) > 0 else i_default
+    return choice(cache[field]) if app.redisDB.llen(field) > 0 else i_default
 
 def find_image_path(image, fullpath=True):
     cache = read_image_cache()
@@ -92,8 +94,8 @@ def move_image(requestform):
         target = image_folders[targettag]
         try:
             rename(path.join(source, requestform['image']), path.join(target, requestform['image']))
-            redisDB.rpush(targettag, requestform['image'])
-            redisDB.lrem(sourcetag, requestform['image'])
+            app.redisDB.rpush(targettag, requestform['image'])
+            app.redisDB.lrem(sourcetag, requestform['image'])
             flash('%s %s' %(flashstate, requestform['image']))
         except (OSError, Exception) as e:
             logger.error('could not move: %s -> %s (%s)' %(path.join(source, requestform['image']), path.join(target, requestform['image']), e))
@@ -110,9 +112,30 @@ def scrape_status(url):
     except Exception as e:
         logger.info('scrape error: %s  %s' %(url, e))
     else:
-        redisDB.set('statusjson', feed)
+        app.redisDB.set('statusjson', feed)
         logger.info('json refreshed')
 
 
 def json_status():
-    return loads(redisDB.get('statusjson'))
+    status = app.redisDB.get('statusjson')
+    if status:
+        return loads(status)
+
+
+from  threading import Timer
+
+class RepeatingTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        super().__init__()
+        self.args = args
+        self.kwargs = kwargs
+        self.function = function
+        self.interval = interval
+    def start(self):
+        self.callback()
+    def stop(self):
+        self.interval = False
+    def callback(self):
+        if self.interval:
+            self.function(*self.args, **self.kwargs)
+            Timer(self.interval, self.callback, ).start()

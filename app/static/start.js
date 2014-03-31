@@ -35,9 +35,9 @@ function shortcuts()
     };
 }
 
-function setclock()
+function setclock(clock)
 {
-    var clock = document.getElementById('clock');
+    // var clock = document.getElementById('clock');
     var date = document.getElementById('date');
     months = new Array('Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez');
     var interval = setInterval(function()
@@ -77,19 +77,15 @@ function setclock()
         {
             clock.innerHTML = hours + ':' + minutes + ':' + seconds;
         }
-    }, 100);
+    }, 250);
 
 }
 
-function imagecycle(image)
+function imagecycle()
 {
-
     var imagesource = new EventSource('/index/stream');
-    var xmlhttp = new XMLHttpRequest();
-
     imagesource.onmessage = function(event)
     {
-
         var currentimage = document.getElementById('currentimage');
         if(typeof(currentimage) != 'undefined' && currentimage !== null)
         {
@@ -104,13 +100,6 @@ function imagecycle(image)
             }
         }
     };
-
-    var interval = setInterval(function()
-    {
-        xmlhttp.open("GET", "/index/next", true);
-        xmlhttp.send(null);
-    }, delay);
-
 }
 
 function shoutbox(shout)
@@ -139,7 +128,6 @@ function start()
     var datet = document.getElementById('date');
     var shout = document.getElementById('shout');
 
-
     if(typeof(sortc) != 'undefined' && sortc !== null)
     {
         shortcuts();
@@ -155,15 +143,13 @@ function start()
 
     if(typeof(clock) != 'undefined' && clock !== null || typeof(datet) != 'undefined' && datet !== null)
     {
-        setclock();
+        setclock(clock);
     }
 
     if(typeof(image) != 'undefined' && image !== null)
     {
-        imagecycle(image);
+        imagecycle();
     }
-
-
 
     if(typeof(shout) != 'undefined' && shout !== null)
     {

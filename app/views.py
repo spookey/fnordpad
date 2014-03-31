@@ -2,13 +2,15 @@
 
 from flask import render_template, url_for, flash, redirect, send_from_directory, request, Response, stream_with_context
 from app import app, logger
-from .service import timestamp_now, shout_to_browser, shout_to_redis, list_all_images, find_image_path, mk_image_cache, get_image, move_image, get_image_stats, scrape_status, json_status
+from .service import RepeatingTimer, timestamp_now, shout_to_browser, shout_to_redis, list_all_images, find_image_path, mk_image_cache, get_image, next_image, move_image, get_image_stats, scrape_status, json_status
 from .suppenkasper import kasper
-from config import i_default, taglines, image_channel, shout_channel, statusjsonurl
+from config import i_default, taglines, image_channel, shout_channel, statusjsonurl, delay_len
 from itertools import cycle
 
 app.last_scrape = 0
 tagline = cycle(taglines)
+app.imgrotation = RepeatingTimer(delay_len, next_image)
+# app.imgrotation.start()
 
 @app.route('/index/')
 @app.route('/index/<refresh>')
@@ -21,10 +23,8 @@ def index(refresh=None):
                 direct_passthrough=True,
                 mimetype='text/event-stream'
             )
-        else:
-            image = get_image()
-            shout_to_redis(image_channel, image)
-            return image
+        # else:
+        #     return shout_to_redis(image_channel, get_image())
 
     if timestamp_now()/60 - 20 >= app.last_scrape/60:
         mk_image_cache()
@@ -86,8 +86,7 @@ def shout(text=None):
                 direct_passthrough=True,
                 mimetype='text/event-stream'
             )
-        shout_to_redis(shout_channel, text)
-        return text
+        return shout_to_redis(shout_channel, text)
     return redirect(url_for('index'))
 
 @app.route('/image/')
@@ -106,8 +105,7 @@ def favicon():
 
 @app.errorhandler(404)
 def not_found(error):
-    logger.error('404: %s' %(error))
-    logger.exception(error)
+    logger.error(error)
     flash('I checked twice!')
     return render_template('404.html',
         title = '404',
@@ -116,8 +114,7 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    logger.error('500: %s' %(error))
-    logger.exception(error)
+    logger.error(error)
     flash('This is weird!')
     return render_template('500.html',
         title = '500',
