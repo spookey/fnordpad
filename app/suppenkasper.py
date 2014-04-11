@@ -1,86 +1,59 @@
-# -.- coding: utf-8 -.-
+'''suppenkasper'''
 
-from config import image_folders, soupusers, crawl_pages
-from .service import list_all_images
-from log import logger
-import re
-from os import path
-from requests import get as rget
+from re import search as research
+from config import SOUPUSERS, SOUPPAGES
+from app.helpers import Net
+from app.proc import tpool
+from app.log import LOGGER
+from app import RDB
 
-class SoupParser(object):
+class Suppenkasper(object):
+
+    __net = None
+    _users = None
+    __scrape = None
 
     # Vielen Dank an Frank für diese Awesome Regex!
-    __rx = r'(url|src)="(http://asset-.\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'
-    __sx = r'SOUP.Endless.next_url.*/(since/\d*)'
+    __img_rx = r'(url|src)="(http://asset-.\.soup\.io/asset/\d{4}/.{4}_.{4})(_.*)?\.(jpeg|jpg|gif|png)'
+    __nxt_rx = r'SOUP.Endless.next_url.*/(since/\d*)'
 
-    def __init__(self, soupuser, pages):
-        self.__soupuser = soupuser
-        self.__pages = pages
+    def __init__(self):
+        super().__init__()
+        if not self.__net:
+            self.__net = Net()
+        if not self._users:
+            self._users = SOUPUSERS
+        LOGGER.info('new suppenkasper instance')
 
-    def __crawl(self, url):
-        images = []
+    def __nextsince(self):
+        for line in self.__scrape:
+            if research(self.__nxt_rx, line):
+                return research(self.__nxt_rx, line).group(1)
+        return ''
+
+    def __pageimages(self):
+        for line in self.__scrape:
+            imagesearch = research(self.__img_rx, line)
+            if imagesearch and not research('square', imagesearch.group(0)):
+                yield '%s.%s' % (imagesearch.group(2), imagesearch.group(4))
+        return ''
+
+    def _usercrawl(self, user, loops=SOUPPAGES):
         since = ''
-        code = rget(url).text
-        for line in code.split('\n'):
-            imagesearch = re.search(self.__rx, line)
-            if imagesearch and not re.search('square', imagesearch.group(0)):
-                image = '%s.%s' % (imagesearch.group(2), imagesearch.group(4))
-                images.append(image)
-            if re.search(self.__sx, line):
-                since = re.search(self.__sx, line).group(1)
-        return images, since
+        for loop in range(loops):
+            url = 'http://{user}.soup.io/{since}'.format(user=user, since=since)
+            self.__scrape = self.__net.url_scrape(url, split=True)
+            since = self.__nextsince()
+            LOGGER.info('finished page %d/%d for %s' %(loop+1, loops, user))
+            for image in self.__pageimages():
+                yield image
 
-    def _soupweb(self, loops):
-        images = []
-        since = ''
-        for loop in range(0, loops):
-            url='http://%s.soup.io/%s' %(self.__soupuser, since)
-            result = self.__crawl(url)
-            images.extend(result[0])
-            since = result[1]
-            logger.info('Finished %d/%d for %s' %(loop + 1, loops, self.__soupuser))
-        return images
-
-    def parse(self):
-        # Entfernt doppelte Einträge
-        images = set(self._soupweb(self.__pages))
-        logger.info('Finished for %s' %(self.__soupuser))
-        return images
-
-
-def dload(urllist):
-    for url in urllist:
-        filename = url.split('/')[-1]
-        r = rget(url, stream=True)
-        if r.status_code == 200:
-            with open(path.join(image_folders['unsorted'], filename), 'wb') as f:
-                for chunk in r.iter_content(1024):
-                    f.write(chunk)
-            logger.info('.done: %s' %(filename))
-
-def kasper(view=True):
-    startmsg = 'suppenkasper started'
-    logger.info(startmsg)
-    logger.info('-' * len(startmsg))
-
-    loadurls = list()
-    allimages = list_all_images()
-
-    for user in soupusers:
-        logger.info('parsing %s' %(user))
-
-        loadurls += [url for url in SoupParser(user, crawl_pages).parse() if url.split('/')[-1] not in allimages]
-
-    endmsg = 'crawl finished'
-    logger.info(endmsg)
-    logger.info('-' * len(endmsg))
-
-    response = '%s Elements:<br />' %(len(loadurls))
-    for url in loadurls:
-        response += '%s <br />' %(url.split('/')[-1])
-
-    if view == 'load':
-        dload(loadurls)
-        return response
-    else:
-        return response
+    def kasper(self):
+        load = list()
+        for user in self._users:
+            LOGGER.info('kasper %s' %(user))
+            for image in self._usercrawl(user):
+                if image.split('/')[-1] not in RDB.get_all_images():
+                    load.append(image)
+                    yield user, image
+        tpool(self.__net.download_image, load)

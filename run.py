@@ -1,9 +1,8 @@
-# -.- coding: UTF-8 -.-
+'''development launcher'''
 
-'''run fnordpad at localhost:5000'''
+from app import APP
 
-from app import app
+if __name__ == '__main__':
+    APP.config['USE_X_SENDFILE'] = False
+    APP.run(debug=True, threaded=True)
 
-app.config['USE_X_SENDFILE'] = False
-
-app.run(debug=True, threaded=True)

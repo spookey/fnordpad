@@ -1,97 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if image %}
-    <div id="image">
-        <img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" id="currentimage" />
-    </div>
-{% endif %}
+    {% if text %}
+        {{ text|safe }}
+    {% endif %}
 
-{% if status %}
-    <div id="bar">
-        <ul>
-            <li class="heading"><a href="{{ url_for('sort') }}">fnordpad</a></li>
-        </ul>
-        <ul>
-            <li id="date">&nbsp;</li>
-            <li id="clock">&nbsp;</li>
-        </ul>
+    {% if image %}
+        <div  class="currentimage">
+            <img src="{{ url_for('static', filename=image) }}" alt="{{ image }}" id="imageID" />
+        </div>
+    {% endif %}
 
-            {% if status.tagline is defined %}
+    {% if sidebar %}
+        <div class="sbarright">
             <ul>
-                <li>{{ status.tagline }}</li>
+                <li class="header"><a href="{{ url_for('index') }}">fnordpad</a></li>
+                <li id="dateID">23. Mär 1942</li>
+                <li id="clockID">23:42:05</li>
+                {% if sidebar.tagline %}<li>{{ sidebar.tagline }}</li>{% endif %}
             </ul>
+
+            {% if sidebar.status %}
+                {% from "_helpers.html" import statusjson %}
+                {{ statusjson(sidebar.status) }}
             {% endif %}
-
-            {% if status.json is defined and status.json != None %}
-
-                {% if status.json.leases is defined and status.json.leases.value is defined %}
+            {% if sidebar.imagestats %}
                 <ul>
-                    <li class="heading">Network &larr;</li>
-                    <li>dhcp: {{ status.json.leases.value }} Leases</li>
+                    <li class="header">images</li>
+                    {% for folder in sidebar.imagestats %}
+                        <li class="subli">{{ folder|capitalize }}</li><li>{{ sidebar.imagestats[folder] }} images</li>
+                    {% endfor %}
                 </ul>
-                {% endif %}
-
-                {% if status.json['traffic-v4_in'] is defined and status.json['traffic-v4_in'].value is defined
-                and status.json['traffic-v4_out'] is defined and status.json['traffic-v4_out'].value is defined
-                and status.json['traffic-v6_in'] is defined and status.json['traffic-v6_in'].value is defined
-                and status.json['traffic-v6_out'] is defined and status.json['traffic-v6_out'].value is defined %}
-                <ul>
-                    <li class="heading">Traffic &larr;</li>
-                    <li>v4 in: {{ status.json['traffic-v4_in'].value|filesizeformat }}</li>
-                    <li>v4 out: {{ status.json['traffic-v4_out'].value|filesizeformat }}</li>
-                    <li>v6 in: {{ status.json['traffic-v6_in'].value|filesizeformat }}</li>
-                    <li>v6 out: {{ status.json['traffic-v6_out'].value|filesizeformat }}</li>
-                </ul>
-                {% endif %}
-
-                {% if status.json.airport is defined and status.json.chumby is defined %}
-                <ul>
-                    <li class="heading">Devices &larr;</li>
-                    {% if status.json.airport.value is defined %}
-                        <li title="{{ status.json.airport.value }}">Airport: {{ 'online' if status.json.airport.value == 1 else 'offline' }}</li>
-                    {% endif %}
-                    {% if status.json.chumby.value is defined %}
-                        <li title="{{ status.json.chumby.value }}">Chumby: {{ 'online' if status.json.chumby.value == 1 else 'offline' }}</li>
-                    {% endif %}
-                </ul>
-                {% endif %}
-
-                {% if status.json.energie is defined and status.json.energie.value is defined %}
-                <ul>
-                    <li class="heading">Energy &larr;</li>
-                    <li>Watt: {{ status.json.energie.value }}</li>
-                </ul>
-                {% endif %}
-
-                {% if status.imagestats is defined %}
-                <ul>
-                    <li class="heading">Images &larr;</li>
-                    <li>Public: {{ status.imagestats['public'] }}</li>
-                    <li>Unsorted: {{ status.imagestats['unsorted'] }}</li>
-                    <li>Rejected: {{ status.imagestats['reject'] }}</li>
-                </ul>
-                {% endif %}
             {% endif %}
-    </div>
-
-    <div id="shout">&nbsp;</div>
-{% endif %}
-
-{% if sort %}
-    <div id="vote">
-        <form method="POST" action="{{ url_for('sort') }}" class="vote">
-            <input id="imagename" name="image" type="hidden" value="{{ sort }}">
-                <input id="plus" name="plus" type="submit" value="+">
-                <input id="minus" name="minus" type="submit" value="-">
-        </form>
-    </div>
-    <div class="text">Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %} <a href="{{ url_for('index') }}">index</a></div>
-    <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
-{% endif %}
-
-{% if text %}
-    <div class="text">{{ text|safe }}</div>
-{% endif %}
+        </div>
+    {% endif %}
 
 {% endblock %}

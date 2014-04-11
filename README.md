@@ -28,3 +28,6 @@ Live und in Farbe kann man dies im [CCC Mainz/Wiesbaden](https://www.cccmz.de/) 
     * Werkzeug
 * Redis
     * redis-py
+* Requests
+    * requests
+

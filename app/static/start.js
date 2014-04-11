@@ -1,44 +1,9 @@
-var delay = 15000;
+/* window load launch */
 
-function shortcuts()
+function setclock()
 {
-    var click_event = document.createEvent('MouseEvent');
-    click_event.initMouseEvent ('click', true, true, window);
-
-    document.onkeydown=function(e)
-    {
-        if(e.which == 80) //p
-        {
-            // Plus
-            document.getElementById('plus').dispatchEvent(click_event);
-        }
-
-        if(e.which == 77) //m
-        {
-            // Minus
-            document.getElementById('minus').dispatchEvent(click_event);
-        }
-
-        if(e.which == 65) //a
-        {
-            // Again
-            window.location.reload();
-            return false;
-        }
-
-        if(e.which == 72) //h
-        {
-            // Home
-            document.location.href = '/index';
-            return false;
-        }
-    };
-}
-
-function setclock(clock)
-{
-    // var clock = document.getElementById('clock');
-    var date = document.getElementById('date');
+    var clockID = document.getElementById('clockID');
+    var dateID = document.getElementById('dateID');
     months = new Array('Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez');
     var interval = setInterval(function()
     {
@@ -69,92 +34,63 @@ function setclock(clock)
             seconds = '0' + seconds;
         }
 
-        if(typeof(date) != 'undefined' && date !== null)
+        if(typeof(dateID) != 'undefined' && dateID !== null)
         {
-            date.innerHTML = day + '. ' + months[month] + ' ' + year;
+            dateID.innerHTML = day + '. ' + months[month] + ' ' + year;
         }
-        if(typeof(clock) != 'undefined' && clock !== null)
+        if(typeof(clockID) != 'undefined' && clockID !== null)
         {
-            clock.innerHTML = hours + ':' + minutes + ':' + seconds;
+            clockID.innerHTML = hours + ':' + minutes + ':' + seconds;
         }
     }, 250);
 
 }
 
-function imagecycle()
+function imagechannel()
 {
-    var imagesource = new EventSource('/index/stream');
-    imagesource.onmessage = function(event)
+    console.log('listening to images');
+    var imagestream = new EventSource('/stream/image/');
+    imagestream.onmessage = function(event)
     {
-        var currentimage = document.getElementById('currentimage');
+        var currentimage = document.getElementById('imageID');
         if(typeof(currentimage) != 'undefined' && currentimage !== null)
         {
-            if(currentimage.complete)
-            {
-                var nextimage = new Image();
-                nextimage.src = '/image/' + event.data;
-                nextimage.alt = event.data;
-                nextimage.id = 'currentimage';
-                currentimage.parentNode.insertBefore(nextimage, currentimage);
-                currentimage.parentNode.removeChild(currentimage);
-            }
+            var nextimage = new Image();
+            nextimage.src = '/static/' + event.data;
+            nextimage.alt = event.data;
+            nextimage.id = 'imageID';
+            currentimage.parentNode.insertBefore(nextimage, currentimage);
+            currentimage.parentNode.removeChild(currentimage);
+            console.log('new image: ' + event.data);
         }
-    };
-}
-
-function shoutbox(shout)
-{
-    var shoutsource = new EventSource('/shout/stream');
-    shoutsource.onmessage = function(event)
-    {
-        shout.innerHTML = event.data;
-        shout.style.display = 'block';
-
-        var timeout = setTimeout(function()
-        {
-            shout.style.display = 'none';
-        }, delay);
 
     };
 }
 
-function start()
+function shoutchannel()
 {
-
-    var sortc = document.getElementById('sort');
-    var error = document.getElementById('error');
-    var clock = document.getElementById('clock');
-    var image = document.getElementById('currentimage');
-    var datet = document.getElementById('date');
-    var shout = document.getElementById('shout');
-
-    if(typeof(sortc) != 'undefined' && sortc !== null)
+    console.log('listening to shouts');
+    var shoutstream = new EventSource('/stream/shout/');
+    shoutstream.onmessage = function(event)
     {
-        shortcuts();
-    }
-
-    if(typeof(error) != 'undefined' && error !== null)
-    {
-        setTimeout(function()
+        var shoutID = document.getElementById('shoutID');
+        if(typeof(shoutID) != 'undefined' && shoutID !== null)
         {
-            window.location.href = '/';
-        }, delay / 2);
-    }
+            shoutID.innerHTML = event.data;
+            shoutID.style.display = 'block';
+            console.log('shout: ' + event.data);
+            var timeout = setTimeout(function()
+            {
+                shoutID.style.display = 'none';
+            }, delay);
+        }
 
-    if(typeof(clock) != 'undefined' && clock !== null || typeof(datet) != 'undefined' && datet !== null)
-    {
-        setclock(clock);
-    }
-
-    if(typeof(image) != 'undefined' && image !== null)
-    {
-        imagecycle();
-    }
-
-    if(typeof(shout) != 'undefined' && shout !== null)
-    {
-        shoutbox(shout);
-    }
+    };
 }
 
-window.onload = start;
+window.onload = function()
+{
+    imagechannel();
+    shoutchannel();
+    setclock();
+};

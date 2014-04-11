@@ -1,4 +1,4 @@
-/*Kein Kommentar*/
+/* fonts */
 
 @font-face {
     font-family: 'SourceCodeProRegular';
@@ -11,37 +11,10 @@
     font-style: normal;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-}
-/*http://ethanschoonover.com/solarized*/
-.red{
-    color: #dc322f;
-}
-.yellow{
-    color: #b58900;
-}
-.orange{
-    color: #cb4b16;
-}
-.magenta{
-    color: #d33682;
-}
-.violet{
-    color: #6c71c4;
-}
-.blue{
-    color: #268bd2;
-}
-.cyan{
-    color: #2aa198;
-}
-.green{
-    color: #859900;
-}
+/* CSS */
 
-body{
+body
+{
     background: #000000;
     color: #ffffff;
     font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
@@ -60,101 +33,164 @@ a:visited{
     color: #6c71c4;
 }
 
-ul{
-    margin: 0 0 1.5em;
+a:visited:hover
+{
+    color: #2aa198;
 }
 
-#main{
-    padding: .5em;
+.sbarleft, .sbarright, .flash, .shout, .sortimages
+{
+    border-radius: .5em;
+    margin: 1em;
+    padding: 1em;
 }
 
-#sort, #image{
-    text-align: center;
+.main
+{
+    background: rgb(16,16,16);
+    background: rgba(16,16,16,0.9);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-#sort img, #image img{
-    margin: auto;
-    position: fixed;
-    top: 0; bottom: 0;
-    left: 0; right: 0;
-    max-width: 95%;
-    max-height: 95%;
+.shout
+{
+    display: none;
 }
 
-#bar, #message, #vote, #shout, .text{
+.sbarleft, .sbarright, .flash, .shout
+{
+    position: absolute;
     background: rgb(128,128,128);
     background: rgba(128,128,128,0.8);
-    position: fixed;
-    padding: 1em .5em;
-    border-radius: .5em;
-    text-align: left;
-}
-
-#bar{
-    right: 1%;
-    top: 2%;
-    bottom: 2%;
-    max-width: 12em;
     overflow: hidden;
 }
 
-#bar a{
-    color: #ffffff;
-    text-decoration: none;
+.flash, .shout
+{
+    text-align: center;
+    left: 16em;
+    right: 16em;
 }
 
-#bar li{
-    padding: .3em 0;
+.flash
+{
+    top: 1em;
+}
+
+.shout
+{
+    font-size: 4em;
+    margin: .25em;
+    padding: .25em;
+    bottom: .25em;
+    left: 4em;
+    right: 4em;
+    border-radius: .125em;
+}
+
+.sbarleft, .sbarright
+{
+    top: 1em;
+    bottom: 1em;
+    width: 12em;
+    margin: 1em;
+}
+
+.sbarleft
+{
+    left: 1em;
+}
+
+.sbarright
+{
+    right: 1em;
+}
+
+.sbarleft .header, .sbarright .header
+{
+    text-decoration: underline;
+    padding: 0 0 .5em 0;
+}
+
+.sbarleft ul, .sbarright ul
+{
+    padding: 0 0 .25em 0;
+}
+
+.sbarleft li, .sbarright li
+{
+    padding: 0 0 .25em 0;
+}
+
+.sbarleft li
+{
+    list-style: none;
+    text-align: left;
+}
+
+.sbarright li
+{
     list-style: none;
     text-align: right;
 }
 
-#bar li[title='0']{
-    color: #000000;
-}
-
-#bar .heading{
-    font-size: 1.25em;
+.sbarleft .subli, .sbarright .subli
+{
     text-decoration: underline;
 }
 
-#message{
-    left: 1%;
-    top: 2%;
-}
-
-.text{
-    right: 1%;
-    bottom: 2%;
-}
-
-#shout{
-    display: none;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    width: 50%;
-    bottom: 2%;
-    text-align: center;
-    font-size: 2.5em;
-}
-
-#vote{
-    width: 12em;
-    right: 1%;
-    top: 2%;
+.currentimage, .sortimages, .sortimage
+{
     text-align: center;
 }
 
-#vote input{
-    font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
-    font-size: 1.5em;
-    color: #000000;
-    background: #ffffff;
-    /*width: 12em;*/
-    width: 90%;
-    border-radius: .5em;
-    border: .1em solid #000000;
-    margin: .5em 0;
+.sortimages
+{
+    background: rgb(128,128,128);
+    background: rgba(128,128,128,0.8);
+    overflow: hidden;
+    margin: 1em;
+    float: right;
+    width: 23em;
+    height: 23em;
+}
+
+.currentimage img, .sortimage img
+{
+    position: absolute;
+    max-width: 95%;
+    max-height: 95%;
+}
+
+.sortimages img
+{
+    position: relative;
+    height: 21em;
+}
+
+.currentimage img, .sortimages img, .sortimage img
+{
+    margin: auto;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+}
+
+.vote
+{
+    margin: 1em;
+    width: 21em;
+}
+
+.vote .plus, .vote .minus
+{
+    position: relative;
+    margin: auto;
+    bottom: 1em;
+    background: rgb(256,256,256);
+    background: rgba(256,256,256,0.8);
     padding: .5em;
+    border-radius: .5em;
 }
