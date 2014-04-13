@@ -10,7 +10,6 @@ LOGFILE = path.join(LOGDIR, 'fnordpad.log')
 SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 #>>> import os
 #>>> os.urandom(24)
-USE_X_SENDFILE = True
 
 CONTENTDIR = path.join(BASEDIR, 'app/static/content')
 
@@ -30,9 +29,9 @@ REDIS_OPT = {
     'db': 2,
     'decode_responses': True,
     'image_prefix': 'images',       # prefix for images
-    'image_expire': 60*5,           # cache expire in seconds
+    'image_expire': 60*45,          # cache expire in seconds
     'image_pubsub': 'image',        # pubsub channel images
-    'image_timeout': 20,            # seconds
+    'image_timeout': 15,            # seconds
     'sort_slices': 9,               # sort pagination
     'shout_pubsub': 'shout',        # pubsub channel shout
     'status_prefix': 'status',      # prefix for status json data

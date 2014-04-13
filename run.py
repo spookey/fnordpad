@@ -1,8 +1,7 @@
-'''development launcher'''
+'''launcher'''
 
 from app import APP
 
 if __name__ == '__main__':
-    APP.config['USE_X_SENDFILE'] = False
-    APP.run(debug=True, threaded=True)
+    APP.run('127.0.0.1', debug=True, threaded=True)
 

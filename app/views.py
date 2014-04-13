@@ -23,7 +23,6 @@ def index():
     LOGGER.info('index requested')
     return render_template('main.html',
         title='fnordpad',
-        text='-.-',
         image=RDB.random_image(folder='public'),
         sidebar=sidebar,
         )
