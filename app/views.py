@@ -91,6 +91,14 @@ def action():
                 RDB.move_image(request.json['image'], target)
                 return '%s -> %s' %(request.json['image'], target)
 
+@APP.route('/flush')
+def flush():
+    RDB.flush_all()
+    flash('redis flushed')
+    RDB.get_images()
+    return redirect(url_for('index'))
+
+
 def stream_template(templatename, **context):
         APP.update_template_context(context)
         template = APP.jinja_env.get_template(templatename)

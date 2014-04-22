@@ -50,6 +50,16 @@ class Redabas(object):
         if field in self.__redis_opt.keys():
             return self.__redis_opt[field]
 
+    def flush_all(self):
+        rdbfields = list()
+        for folder in self.__files.get_contentsub(full=False):
+            rdbfields.append('%s:%s' %(self.__redis_opt['image_prefix'], folder))
+        rdbfields.append('%s:feed' %(self.__redis_opt['status_prefix']))
+
+        for entry in rdbfields:
+            self.__rdb.delete(entry)
+            LOGGER.info('flushed data for %s' %(entry))
+
     #
 
     def get_images(self, folder='public'):
@@ -63,8 +73,7 @@ class Redabas(object):
             for image in self.__files.find_images(folder=folder):
                 self.__rdb.rpush(rdbfield, image)
                 result.append(image)
-            self.__rdb.expire(rdbfield, self.__redis_opt['image_expire'])
-            LOGGER.info('rebuilt redis image cache for %s, again after %i seconds' %(rdbfield, self.__redis_opt['image_expire']))
+            LOGGER.info('rebuilt redis image cache for %s' %(rdbfield))
             return result
 
         if folder in self.__files.get_contentsub():

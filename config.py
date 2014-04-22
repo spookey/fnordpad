@@ -28,13 +28,12 @@ REDIS_OPT = {
     'port': 6379,
     'db': 2,
     'decode_responses': True,
-    'image_prefix': 'images',       # prefix for images
-    'image_expire': 60*45,          # cache expire in seconds
+    'image_prefix': 'images',       # db prefix for images
     'image_pubsub': 'image',        # pubsub channel images
     'image_timeout': 15,            # seconds
     'sort_slices': 9,               # sort pagination
     'shout_pubsub': 'shout',        # pubsub channel shout
-    'status_prefix': 'status',      # prefix for status json data
+    'status_prefix': 'status',      # db prefix for status json data
     'status_expire': 60*15,         # Seconds
     'status_url': 'http://status.cccmz.de/api/latest/get/all/last/',
 }
