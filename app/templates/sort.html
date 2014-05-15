@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    {% if text %}
+        {{ text|safe }}
+    {% endif %}
+
+    {% if imagestats or folderimages %}
+        <div class="sbarleft">
+            {% if imagestats %}
+                <ul>
+                    {% for folder in imagestats|sort %}
+                        <li><a href="{{ url_for('sort', ressource=folder) }}">{{ folder }}</a> [{{ imagestats[folder] }}]</li><!-- TODO: Variablen ins Template und JS drücken -->
+                        <li>&rarr;
+                            {% for page in range((imagestats[folder]/sort_slices)|round(method='ceil')|int) %}
+                                <a href="{{ url_for('sort', ressource=folder, page=page) }}">{{ page }}</a>
+                            {% endfor %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if folderimages %}
+                <ul>
+                    {% for image in folderimages|sort %}
+                        <li><a href="{{ url_for('sort', ressource=image) }}">{{ image }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if sortimages %}
+        {% for image in sortimages %}
+            <div class="{% if sortimages|length == 1 %}sortimage{% else %}sortimages{% endif %}" id="{{ image }}">
+                <a href="{{ url_for('sort', ressource=image) }}">
+                    <img src="{{ url_for('static', filename=sortimages[image]) }}" alt="{{ image }}" />
+                </a>
+                <div class="vote">
+                    <a href="javascript:imagerequest('{{ image }}', 'plus')" class="plus">plus</a>
+                    <a href="javascript:imagerequest('{{ image }}', 'minus')" class="minus">minus</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if duplicates %}
+        {% for dup in duplicates %}
+            <div class="sortimages" id="{{ dup['image'] }}">
+                <img src="{{ url_for('static', filename=dup['imgpath']) }}" alt="{{ dup['image'] }}" />
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if suppenkasper %}
+    <ul>
+        {% set currentuser = '' %}
+        {% for user, image in suppenkasper %}
+            {% if currentuser != user %}
+                {% set currentuser = user %}
+                </ul>
+                    <h2>{{ currentuser }}</h2>
+                <ul>
+            {% endif %}
+            <li>{{ image }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+{% endblock %}

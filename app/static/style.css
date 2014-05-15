@@ -1,4 +1,4 @@
-/*Kein Kommentar*/
+/* fonts */
 
 @font-face {
     font-family: 'SourceCodeProRegular';
@@ -11,37 +11,10 @@
     font-style: normal;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-}
-/*http://ethanschoonover.com/solarized*/
-.red{
-    color: #dc322f;
-}
-.yellow{
-    color: #b58900;
-}
-.orange{
-    color: #cb4b16;
-}
-.magenta{
-    color: #d33682;
-}
-.violet{
-    color: #6c71c4;
-}
-.blue{
-    color: #268bd2;
-}
-.cyan{
-    color: #2aa198;
-}
-.green{
-    color: #859900;
-}
+/* CSS */
 
-body{
+body
+{
     background: #000000;
     color: #ffffff;
     font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
@@ -60,118 +33,164 @@ a:visited{
     color: #6c71c4;
 }
 
-#main{
-    padding: 5px;
-    width: auto;
-    text-align: center;
+a:visited:hover
+{
+    color: #2aa198;
 }
 
-#sort img, #images img{
-    max-width: 95%;
-    max-height: 95%;
-    margin: 0 auto;
+.sbarleft, .sbarright, .flash, .shout, .sortimages
+{
+    border-radius: .5em;
+    margin: 1em;
+    padding: 1em;
 }
 
-#images img{
+.main
+{
+    background: rgb(16,16,16);
+    background: rgba(16,16,16,0.9);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.shout
+{
     display: none;
 }
 
-.duplicate{
-    overflow: hidden;
-    position: relative;
-    float: left;
-    width: 300px;
-    height: 300px;
-    text-align: left;
-    border: 10px solid rgb(255, 255, 255, 0.9);
-    border-bottom: 45px rgb(255, 255, 255, 0.9);
-    border: 10px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 45px solid rgba(255, 255, 255, 0.9);
-    margin: 5px;
-    color: #000000;
-}
-
-.duplicate .text{
+.sbarleft, .sbarright, .flash, .shout
+{
     position: absolute;
-    bottom: 5px;
-    left: 30px;
-}
-
-.duplicate:hover{
-    color: #ffffff;
-}
-
-.duplicate img{
-    position: relative;
-    width: 600px;
-    left: -50px
-}
-
-#bar, #message, #vote, #text{
     background: rgb(128,128,128);
     background: rgba(128,128,128,0.8);
-    position: fixed;
-    padding: 10px 5px;
-    border-radius: 5px;
-    text-align: left;
-}
-
-#bar{
-    right: 10px;
-    top: 5%;
-    bottom: 5%;
-    max-width: 125px;
     overflow: hidden;
 }
 
-#bar a{
-    color: #ffffff;
-    text-decoration: none;
+.flash, .shout
+{
+    text-align: center;
+    left: 16em;
+    right: 16em;
 }
 
-#bar li{
-    padding: 3px 0;
+.flash
+{
+    top: 1em;
+}
+
+.shout
+{
+    font-size: 4em;
+    margin: .25em;
+    padding: .25em;
+    bottom: .25em;
+    left: 4em;
+    right: 4em;
+    border-radius: .125em;
+}
+
+.sbarleft, .sbarright
+{
+    top: 1em;
+    bottom: 1em;
+    width: 12em;
+    margin: 1em;
+}
+
+.sbarleft
+{
+    left: 1em;
+}
+
+.sbarright
+{
+    right: 1em;
+}
+
+.sbarleft .header, .sbarright .header
+{
+    text-decoration: underline;
+    padding: 0 0 .5em 0;
+}
+
+.sbarleft ul, .sbarright ul
+{
+    padding: 0 0 .25em 0;
+}
+
+.sbarleft li, .sbarright li
+{
+    padding: 0 0 .25em 0;
+}
+
+.sbarleft li
+{
+    list-style: none;
+    text-align: left;
+}
+
+.sbarright li
+{
     list-style: none;
     text-align: right;
 }
 
-#bar li[title='0']{
-    color: #000000;
+.sbarleft .subli, .sbarright .subli
+{
+    text-decoration: underline;
 }
 
-#message{
-    left: 10px;
-    top: 5%;
-}
-
-#text{
-    left: 10px;
-    bottom: 5%;
-}
-
-#vote{
-    width: 20%;
-    left: 40%;
-    bottom: 5%;
+.currentimage, .sortimages, .sortimage
+{
     text-align: center;
-
 }
 
-#vote input{
-    font-family: 'SourceCodeProRegular', 'Courier', 'Monaco', sans-serif;
-    font-size: 1.5em;
-    color: #000000;
-    background: #ffffff;
-    width: 40%;
-    border-radius: 5px;
-    border: 1px solid #000000;
-    margin: 5px;
-    padding: 5px;
+.sortimages
+{
+    background: rgb(128,128,128);
+    background: rgba(128,128,128,0.8);
+    overflow: hidden;
+    margin: 1em;
+    float: right;
+    width: 23em;
+    height: 23em;
 }
 
-.scroll{
-    text-align: left;
-    -webkit-marquee: auto medium infinite scroll normal;
-    overflow-x: -webkit-marquee;
+.currentimage img, .sortimage img
+{
+    position: absolute;
+    max-width: 95%;
+    max-height: 95%;
 }
 
+.sortimages img
+{
+    position: relative;
+    height: 21em;
+}
+
+.currentimage img, .sortimages img, .sortimage img
+{
+    margin: auto;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+}
+
+.vote
+{
+    margin: 1em;
+    width: 21em;
+}
+
+.vote .plus, .vote .minus
+{
+    position: relative;
+    margin: auto;
+    bottom: 1em;
+    background: rgb(256,256,256);
+    background: rgba(256,256,256,0.8);
+    padding: .5em;
+    border-radius: .5em;
+}

@@ -1,9 +1,13 @@
-soup.io crawler für das Fnordpad im CCC Mainz/Wiesbaden.
+# Fnordpad
+
+soup.io crawler & display
+
+Live und in Farbe kann man dies im [CCC Mainz/Wiesbaden](https://www.cccmz.de/) bestaunen!
 
 :smile_cat: :smiley_cat: :kissing_cat: :heart_eyes_cat:
 
 
-:boom:
+:boom: now in Python3
 
     /*
     * ----
@@ -15,3 +19,15 @@ soup.io crawler für das Fnordpad im CCC Mainz/Wiesbaden.
     */
 
 :octocat:
+
+
+# Dependencies
+
+* Flask
+    * Jinja2
+    * Werkzeug
+* Redis
+    * redis-py
+* Requests
+    * requests
+

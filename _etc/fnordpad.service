@@ -1,0 +1,15 @@
+[Unit]
+Description=fnordpad daemon
+
+[Service]
+Type=oneshot
+PIDFile=/media/usbdisk/sw/fnordpad/gunicorn.pid
+User=castor
+WorkingDirectory=/media/usbdisk/sw/fnordpad
+ExecStart=/usr/bin/python3 /media/usbdisk/sw/fnordpad/run.py &
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

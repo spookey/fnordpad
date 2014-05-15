@@ -1,5 +1,7 @@
-# -.- coding: UTF-8 -.-
+'''launcher'''
 
-from app import app
+from app import APP
 
-app.run(debug = True)
+if __name__ == '__main__':
+    APP.run('127.0.0.1', debug=True, threaded=True)
+

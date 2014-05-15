@@ -1,36 +1,65 @@
-# -.- coding: UTF-8 -.-
+'''config file'''
 
-import os
-from logging import getLogger, Formatter, INFO
-from logging.handlers import RotatingFileHandler
+from os import path
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+## General
+BASEDIR = path.abspath(path.dirname(__file__))
+LOGDIR = path.join(BASEDIR, 'logs')
+LOGFILE = path.join(LOGDIR, 'fnordpad.log')
 
-staticdir = os.path.join(basedir, 'app/static/')
-
-p_folder = os.path.join(basedir, 'content')
-p_unsorted = os.path.join(p_folder, 'unsorted')
-p_public = os.path.join(p_folder, 'public')
-p_reject = os.path.join(p_folder, 'reject')
-i_default = os.path.join(p_folder, 'fnord.jpeg')
-
-logfile = os.path.join(basedir, 'logfile.log')
-
-filehandler = RotatingFileHandler(logfile, 'a', 1 * 1024 * 1024, 23)
-filehandler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s [in %(module)s.%(funcName)s:%(lineno)d]'))
-
-logger = getLogger('fnordpad')
-logger.setLevel(INFO)
-logger.addHandler(filehandler)
-
-
+SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 #>>> import os
 #>>> os.urandom(24)
-SECRET_KEY = 'Geheimen Schlüssel hier einfügen, sonst setzts was!!1!'
 
-USE_X_SENDFILE = True
+CONTENTDIR = path.join(BASEDIR, 'app/static/content')
 
-# Crawler
-soupusers=['fnordpad', 'gnd', 'cccmz', 'sixtus', 'lambda', 'againstreality', 'kv0', 'maesto', 'i8br', 'amenthes', 'murmeltier', 'fotochaoten', 'kochchaoten', 'hipsterhackers', 'rocco-the-spoon', 'saper', 'tokei', 'lsanoj', 'markusbec', 'sapling']
-crawl_pages = 50
-crawl_verbose = False
+NULLIMG = 'fnord.jpeg'              # fallback/default image
+
+CONTENTSUB = {
+    'unsorted': path.join(CONTENTDIR, 'unsorted'),
+    'public': path.join(CONTENTDIR, 'public'),
+    'reject': path.join(CONTENTDIR, 'reject'),
+}
+IMAGEEXTENSIONS = ['jpeg', 'jpg', 'png', 'gif']
+
+## Redis
+REDIS_OPT = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 2,
+    'decode_responses': True,
+    'image_prefix': 'images',       # db prefix for images
+    'image_pubsub': 'image',        # pubsub channel images
+    'image_timeout': 15,            # seconds
+    'sort_slices': 9,               # sort pagination
+    'shout_pubsub': 'shout',        # pubsub channel shout
+    'status_prefix': 'status',      # db prefix for status json data
+    'status_expire': 60*15,         # Seconds
+    'status_url': 'http://status.cccmz.de/api/latest/get/all/last/',
+}
+
+TAGLINES = ['It\'s Peanut Butter Jelly Time', 'Your ad here!', 'This page intentionally left blank', 'Lorem ipsum dolor sit amet']
+
+SOUPPAGES = 50
+SOUPUSERS = [
+    'fnordpad',
+    'gnd',
+    'cccmz',
+    'sixtus',
+    'lambda',
+    'againstreality',
+    'kv0',
+    'maesto',
+    'i8br',
+    'amenthes',
+    'murmeltier',
+    'fotochaoten',
+    'kochchaoten',
+    'hipsterhackers',
+    'rocco-the-spoon',
+    'saper',
+    'tokei',
+    'lsanoj',
+    'markusbec',
+    'sapling'
+    ]

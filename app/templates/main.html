@@ -1,87 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if images %}
-    <div id="images">
-    {% for image in images %}
-        <p><a href="{{ url_for('sort', filename=image) }}"><img src="{{ url_for('image', filename=image) }}" alt="{{ image }}" /></a></p>
-    {% endfor %}
-    </div>
-{% endif %}
+    {% if text %}
+        {{ text|safe }}
+    {% endif %}
 
-{% if status %}
-    <div id="bar">
-        <ul>
-            <li><a href="{{ url_for('sort') }}">fnordpad</a></li>
-            {% if status.scroll is defined %}<li class="scroll">{{ status.scroll }}</li>{% endif %}
-            {% if status.datum is defined %}<li>{{ status.datum }}</li>{% endif %}
-            {% if status.uhr is defined %}<li>{{ status.uhr }}</li>{% endif %}
-            {% if status.json is defined %}
-            <br />
-                    <br /><li>Network &larr;</li>
-                    {% if status.json.leases.last %}
-                        <li>dhcp: {{ status.json.leases.last }}</li>
-                    {% endif %}
-                    {% if status.json.traffic_fmt.last %}
-                        {% for proto, val in status.json.traffic_fmt.last %}
-                        <li>{{ proto }}: {{ val }}</li>
-                        {% endfor %}
-                    {% endif %}
-
-                    <br /><li>Devices &larr;</li>
-                    {% if status.json.devices.last %}
-                        {% for device, stat in status.json.devices.last %}
-                            <li title="{{ stat }}">{{ device }}</li>
-                        {% endfor %}
-                    {% endif %}
-
-                    <br /><li>Energy &larr;</li>
-                    {% if status.json.energie.last %}
-                        <li>watt: {{ status.json.energie.last }}</li>
-                    {% endif %}
-
-            {% endif %}
-            <br />
-            {% if status.served is defined %}<li>served: <span id="served">{{ status.served }}</span></li>{% endif %}
-            {% if status.avail is defined %}<li>available: {{ status.avail }}</li>{% endif %}
-            {% if status.new is defined %}
-                <li>unsorted: {% if status.new > 0 %}{{ status.new }}{% else %}none{% endif %}</li>
-            {% endif %}
-        </ul>
-    </div>
-{% endif %}
-
-{% if sort %}
-    <div>Shortcuts: <u>p</u>lus <u>m</u>inus <u>a</u>gain <u>h</u>ome{% if len_left is defined %} &mdash; Left: {{ len_left }}{% endif %}</div>
-    <div id="sort"><img src="{{ url_for('image', filename=sort) }}" alt="{{ sort }}" /></div>
-    <div id="vote">
-        <form method="POST" action="{{ url_for('sort') }}" class="vote">
-            <input id="imagename" name="image" type="hidden" value="{{ sort }}">
-                <input id="plus" name="plus" type="submit" value="+">
-                <input id="minus" name="minus" type="submit" value="-">
-        </form>
-    </div>
-{% endif %}
-
-{% if duplicates %}
-    {% for duplicate in duplicates %}
-        <div class="duplicate">
-            <img src="{{ url_for('image', filename=duplicate.thumb) }}" alt="{{ duplicate.thumb }}" title="{{ duplicate.hash }}" />
-            <div class="text">
-                <big>{{ duplicate.hash }}</big>
-                <ol>
-                {% for dfile in duplicate.files%}
-                    <li><a href="{{ url_for('zapp', filename=dfile[1]) }}">{{ dfile[0] }} {{ dfile[1] }}</a></li>
-                {% endfor %}
-                </ol>
-                += {{ duplicate.len }}
-            </div>
+    {% if image %}
+        <div  class="currentimage">
+            <img src="{{ url_for('static', filename=image) }}" alt="{{ image }}" id="imageID" />
         </div>
-    {% endfor %}
-{% endif %}
+    {% endif %}
 
-{% if text %}
-    <div id="text">{{ text|safe }}</div>
-{% endif %}
+    {% if sidebar %}
+        <div class="sbarright">
+            <ul>
+                <li class="header"><a href="{{ url_for('index') }}">fnordpad</a></li>
+                <li id="dateID">23. Mär 1942</li>
+                <li id="clockID">23:42:05</li>
+                {% if sidebar.tagline %}<li>{{ sidebar.tagline }}</li>{% endif %}
+            </ul>
+
+            {% if sidebar.status %}
+                {% from "_helpers.html" import statusjson %}
+                {{ statusjson(sidebar.status) }}
+            {% endif %}
+            {% if sidebar.imagestats %}
+                <ul>
+                    <li class="header">images</li>
+                    {% for folder in sidebar.imagestats %}
+                        <li class="subli">{{ folder|capitalize }}</li><li>{{ sidebar.imagestats[folder] }} images</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
 
 {% endblock %}

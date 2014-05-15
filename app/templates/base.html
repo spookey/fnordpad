@@ -2,31 +2,41 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    {% if title %}<title>&bull; {{ title }} &bull;</title>{% else %}<title>&bull; &mdash; &bull;</title>{% endif %}
+    {% if title %}<title>#{{ title }}</title>{% else %}<title>##</title>{% endif %}
     <link href="{{ url_for('favicon') }}" rel="shortcut icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css" media="screen">
-    {% if images or sort %}
-    <script src="{{ url_for('static', filename='justify.js') }}"></script>
-    <script src="{{ url_for('static', filename='cycle.js') }}"></script>
-    <script src="{{ url_for('static', filename='shortcut.js') }}"></script>
-    <script src="{{ url_for('static', filename='start.js') }}"></script>
+    {% set sort_slices = 6 %}
+    {% if conf_globals %}
+        {% if conf_globals.js %}
+        <script type="text/javascript">
+            {% for variable in conf_globals.js %}
+                var {{ variable }} = {{ conf_globals.js[variable] }};
+            {% endfor %}
+        </script>
+        {% endif %}
+        {% set sort_slices = conf_globals.ji.sort_slices %}
     {% endif %}
-
+    {% if image %}
+    <script type="text/javascript" src="{{ url_for('static', filename='start.js') }}"></script>
+    {% endif %}
+    {% if sortimages %}
+    <script type="text/javascript" src="{{ url_for('static', filename='sort.js') }}"></script>
+    {% endif %}
+    {% if error %}
+    <script type="text/javascript" src="{{ url_for('static', filename='error.js') }}"></script>
+    {% endif %}
 </head>
 <body>
-    <div id="main">
-        <div id="content">
-            {% block content %}{% endblock %}
-        </div>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div id="message">
-                    {% for message in messages %}<div>{{ message|safe }}</div>{% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
+    <div class="main">
+    {% block content %}{% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash">
+                {% for flashmsg in messages %}<div>{{ flashmsg|safe }}</div>{% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="shout" id="shoutID">{% if error %}{{ error }}{% else %}&mdash;&bull;&mdash;{% endif %}</div>
     </div>
-
 </body>
 </html>

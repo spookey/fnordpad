@@ -1,0 +1,24 @@
+{% macro li_sensor(sensor, value) %}
+    <li class="subli">{{ sensor|capitalize }}</li><li>{{ value }}</li>
+{% endmacro %}
+
+{% macro statusjson(status) %}
+    <ul>
+        <li class="header">status</li>
+        {% for sensor in status|sort %}
+            {% if 'traffic' in sensor %}
+                {{ li_sensor(sensor, status[sensor].value|filesizeformat) }}
+            {% elif 'airport' in sensor or 'chumby' in sensor or 'printer' in sensor or 'tempstrom' in sensor %}
+                 {{ li_sensor(sensor, 'an' if status[sensor].value == 1 else 'aus') }}
+            {% elif 'glassdoor' in sensor %}
+                {{ li_sensor(sensor, 'offen' if status[sensor].value == 1 else 'geschlossen') }}
+            {% elif 'leases' in sensor or 'freifunk' in sensor %}
+                 {{ li_sensor(sensor, '%s Verbindungen' %(status[sensor].value)) }}
+            {% elif 'energie' in sensor %}
+                {{ li_sensor(sensor, '%s watt' %(status[sensor].value)) }}
+            {% else %}
+                {{ li_sensor(sensor, status[sensor].value) }}
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endmacro %}

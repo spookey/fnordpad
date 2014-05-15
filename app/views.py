@@ -1,103 +1,170 @@
-# -.- coding: UTF-8 -.-
+'''main screen turn on, we get signal'''
 
-from flask import render_template, url_for, flash, redirect, send_from_directory, request, session, g
-from app import app
-from service import list_images, list_all_images, find_image_path, uhr, datum, timestamp_now, json_status, get_batch_of_images, get_sort_image, move_image, filedups, zapp_image
-from config import logger, p_unsorted, p_public, p_reject, staticdir, i_default
-from itertools import cycle
+from flask import flash, render_template, redirect, url_for, send_from_directory, Response, stream_with_context, request
+from app.log import LOGGER
+from app import APP, TAGLINES, RDB, DUPLICATES, SUPPENKASPER
 
-app.json = app.last_scrape = 0
+def conf_globals():
+    result = dict()
+    result['js'] = {'delay': RDB.get_ropt('image_timeout')*1000}
+    result['ji'] = {'sort_slices': RDB.get_ropt('sort_slices')}
+    return result
+APP.jinja_env.globals.update(conf_globals=conf_globals())
 
-@app.before_request
-def before_request():
-    if not 'served' in session:
-        logger.info('set served images cookie')
-        session['served'] = 0
-
-scrolling = cycle(['It\'s Peanut Butter Jelly Time', 'Your ad here', 'This page intentionally left blank', 'Lorem ipsum dolor sit amet'])
-
-@app.route('/index/')
-@app.route('/')
+@APP.route('/index/')
+@APP.route('/')
 def index():
-    if timestamp_now()/60 - 20 >= app.last_scrape/60:
-        app.json = json_status()
-        app.last_scrape = timestamp_now()
-    status = {
-        'scroll': scrolling.next(),
-        'served': session['served'],
-        'avail': len(list_images(p_public)),
-        'new': len(list_images(p_unsorted)),
-        'uhr': uhr(),
-        'datum': datum(),
-        'json': app.json if isinstance(app.json, dict) else None,
+    '''homepage'''
+    sidebar = {
+        'status': RDB.get_status(),
+        'imagestats': RDB.get_imagestats(),
+        'tagline': next(TAGLINES),
         }
-    session['served'] += 23
-    logger.info('/index requested')
+    LOGGER.info('index requested')
     return render_template('main.html',
-        title = 'fnordpad',
-        images = get_batch_of_images(),
-        status = status,
+        title='fnordpad',
+        image=RDB.random_image(folder='public'),
+        sidebar=sidebar,
         )
 
-@app.route('/duplicates/')
-def duplicates():
-    logger.info('/duplicates requested')
-    return render_template('main.html',
-        title = 'duplicates',
-        duplicates = filedups(),
-        )
+@APP.route('/stream/<string:channel>/')
+def stream_channel(channel=None):
+    if channel:
+        if channel in [APP.config['REDIS_OPT'][psc] for psc in APP.config['REDIS_OPT'] if psc.endswith('_pubsub')]:
+            LOGGER.info('stream for %s requested' %(channel))
+            return Response(
+                stream_with_context(RDB.browser_shout(APP.config['REDIS_OPT']['%s_pubsub' %(channel)])),
+                direct_passthrough=True,
+                mimetype='text/event-stream'
+                )
 
-@app.route('/zapp/<filename>')
-def zapp(filename=None):
-    if filename:
-        zapp_image(filename)
-    return redirect(url_for('duplicates'))
-
-@app.route('/sort/', methods=['GET', 'POST'])
-@app.route('/sort/<filename>', methods=['GET', 'POST'])
-def sort(filename=None):
-    logger.info('/sort requested')
+@APP.route('/shout/<string:text>/')
+@APP.route('/shout/', methods=['GET','POST'])
+def shout(text=None):
     if request.method == 'POST':
-        move_image(request.form)
-    if not filename:
-        filename = get_sort_image()
-    if not filename in list_all_images():
-        filename = i_default.split('/')[-1]
-    flash('this: %s' %(filename))
-    logger.info('this %s' %(filename))
-    return render_template('main.html',
-        title = 'sortpad',
-        sort = filename,
-        len_left = len(list_images(p_unsorted)),
+        result = str()
+        for part in request.form.keys():
+            RDB.redis_shout(APP.config['REDIS_OPT']['shout_pubsub'], part)
+            result += part
+        return result
+    if text is not None:
+        return RDB.redis_shout(APP.config['REDIS_OPT']['shout_pubsub'], text)
+    return redirect(url_for('index'))
+
+@APP.route('/sort/<string:ressource>/<int:page>/')
+@APP.route('/sort/<string:ressource>/')
+@APP.route('/sort/<int:page>/')
+@APP.route('/sort/')
+def sort(ressource='unsorted', page=0):
+    imagestats = RDB.get_imagestats();
+    sortimages = dict()
+    folderimages = list()
+    if ressource in APP.config['CONTENTSUB'].keys():
+        # folder/rdb match
+        sortimages = RDB.get_sort_images(folder=ressource, page=page)
+        if len(sortimages) == 0 and page != 0:
+            return redirect(url_for('sort', ressource=ressource, page=page-1))
+        folderimages = RDB.get_dict_images(folder=ressource)
+    elif ressource in RDB.get_all_images():
+        # file match
+        sortimages[ressource] = RDB.locate_image(ressource)
+    else:
+        return redirect(url_for('sort'))
+    flash('%s left: %i, page: %i' %(ressource, len(folderimages), page))
+    return render_template('sort.html',
+        title='sort',
+        folderimages=folderimages,
+        sortimages=sortimages,
+        imagestats=imagestats,
         )
 
-@app.route('/image/')
-@app.route('/image/<filename>')
-def image(filename=None):
-    if not filename or not filename in list_all_images():
-        logger.error('requested image not found: %s fallback to %s' %(filename, i_default.split('/')[-1]))
-        filename = i_default.split('/')[-1]
-    return send_from_directory(find_image_path(filename), filename)
+@APP.route('/sort/action/', methods=['POST'])
+def action():
+    if request.method == 'POST':
+        if request.json:
+            target = None
+            if request.json['action'] == 'plus':
+                target = 'public'
+            if request.json['action'] == 'minus':
+                target = 'reject'
+            if target:
+                RDB.move_image(request.json['image'], target)
+                return '%s -> %s' %(request.json['image'], target)
 
-@app.route('/favicon.ico')
+@APP.route('/flush')
+def flush():
+    RDB.flush_all()
+    flash('redis flushed')
+    RDB.get_images()
+    return redirect(url_for('index'))
+
+
+def stream_template(templatename, **context):
+        APP.update_template_context(context)
+        template = APP.jinja_env.get_template(templatename)
+        rv = template.stream(context)
+        rv.enable_buffering(5)      # you might want to buffer up a few items in the template
+        return rv
+
+@APP.route('/duplicates/<string:delete>/')
+@APP.route('/duplicates/')
+def duplicates(delete=None):
+    duplicates = DUPLICATES.check if not delete else DUPLICATES.delete
+    return Response(
+        stream_with_context(
+            stream_template(
+                'sort.html',
+                title='duplicates',
+                duplicates=duplicates(),
+                ),
+            ),
+        )
+
+@APP.route('/crawl')
+def crawl():
+    kasper = SUPPENKASPER.kasper
+    return Response(
+        stream_with_context(
+            stream_template(
+                'sort.html',
+                title='suppenkasper',
+                suppenkasper=kasper(),
+                ),
+            ),
+        )
+
+
+@APP.route('/favicon.ico')
 def favicon():
-    return send_from_directory(staticdir, 'favicon.ico',
+    '''favicon'''
+    return send_from_directory(APP.static_folder, 'favicon.ico',
         mimetype='image/x-icon',
-    )
+        )
 
-@app.errorhandler(404)
-def internal_error(error):
-    logger.error('404: %s' %(error))
-    flash('I checked twice!')
-    return render_template('404.html',
-        title = '404',
-        refreshing = True,
+@APP.errorhandler(404)
+def not_found(error):
+    '''404'''
+    LOGGER.error(error)
+    flash(error)
+    return render_template('main.html',
+        title='404',
+        error='I checked twice!',
         ), 404
 
-@app.errorhandler(500)
+@APP.errorhandler(500)
 def internal_error(error):
-    logger.error('500: %s' %(error))
-    return render_template('500.html',
-        title = '500',
-        refreshing = True,
+    '''500'''
+    LOGGER.error(error)
+    flash(error)
+    return render_template('main.html',
+        title='500',
+        error='This is weird!',
         ), 500
+
+def redis_error(error=None):
+    '''brain not found'''
+    return render_template('main.html',
+        title='DB error',
+        error=error,
+        )
+

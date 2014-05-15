@@ -1,1 +1,0 @@
-0 */2 * * * /usr/bin/python /srv/www/fnordpad/crawl/suppenkasper.py > /srv/www/fnordpad/crawl/kasper.log 2>&1

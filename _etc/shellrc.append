@@ -1,0 +1,16 @@
+# ZSH
+if [[ -z "$DISPLAY" && $(tty) == /dev/tty1 ]]; then
+        while ( true ); do
+                startx
+                sleep 2
+        done
+fi
+
+
+# BASH
+if [ -z "$DISPLAY" ] && [ $(tty) == /dev/tty1 ]; then
+  while [ true ]; do
+    startx
+    sleep 2
+  done
+fi
